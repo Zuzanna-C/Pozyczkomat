@@ -1,0 +1,950 @@
+object DataModule1: TDataModule1
+  Height = 1195
+  Width = 1440
+  PixelsPerInch = 144
+  object FDConnection: TFDConnection
+    Params.Strings = (
+      'BusyTimeout=30000'
+      'DriverID=SQLite'
+      
+        'Database=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_' +
+        'Hackaton_v4\Win64\Release\pozyczkomat.db')
+    Connected = True
+    LoginPrompt = False
+    Left = 79
+    Top = 24
+  end
+  object FDQueryLogin: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      '')
+    Left = 79
+    Top = 120
+  end
+  object DataSourceBorrowed: TDataSource
+    AutoEdit = False
+    DataSet = FDQueryBorrowed
+    Left = 760
+    Top = 152
+  end
+  object FDQueryLoans: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'SELECT '
+      '  T.Id,'
+      '  T.OtherUserID,            '
+      '  T.TypeID,                 '
+      '  '#39'lent'#39' AS Direction,'
+      '  CAST(E2.Name AS TEXT) AS Counterparty,'
+      '  CAST(Types.TypeName AS TEXT) AS ItemType,'
+      '  T.Amount,'
+      '  T.StartDate,'
+      '  T.DueDate,'
+      '  T.Returned,'
+      '  CAST(T.ItemDescription AS TEXT) AS ItemDescription,'
+      '  CAST(T.Notes AS TEXT) AS Notes,'
+      '  CreatedByUserId'
+      'FROM Transactions T'
+      'JOIN Entities AS E2 ON T.OtherUserID = E2.Id'
+      'JOIN Types ON T.TypeID = Types.Id'
+      'WHERE T.OwnerUserID = ('
+      '    SELECT Id FROM Entities WHERE UserId = :uid'
+      ')'
+      'ORDER BY T.StartDate DESC;'
+      '')
+    Left = 976
+    Top = 24
+    ParamData = <
+      item
+        Name = 'UID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 39
+      end>
+    object FDQueryLoansId: TIntegerField
+      FieldName = 'Id'
+      Origin = 'Id'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object FDQueryLoansDirection: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Direction'
+      Origin = 'Direction'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryLoansCounterparty: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Counterparty'
+      Origin = 'Counterparty'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryLoansItemType: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemType'
+      Origin = 'ItemType'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryLoansAmount: TFloatField
+      FieldName = 'Amount'
+      Origin = 'Amount'
+    end
+    object FDQueryLoansStartDate: TDateField
+      FieldName = 'StartDate'
+      Origin = 'StartDate'
+    end
+    object FDQueryLoansDueDate: TDateField
+      FieldName = 'DueDate'
+      Origin = 'DueDate'
+    end
+    object FDQueryLoansReturned: TBooleanField
+      FieldName = 'Returned'
+      Origin = 'Returned'
+      DisplayValues = 'Tak;Nie'
+    end
+    object FDQueryLoansItemDescription: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemDescription'
+      Origin = 'ItemDescription'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryLoansNotes: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Notes'
+      Origin = 'Notes'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryLoansOtherUserID: TIntegerField
+      FieldName = 'OtherUserID'
+      Origin = 'OtherUserID'
+    end
+    object FDQueryLoansTypeID: TIntegerField
+      FieldName = 'TypeID'
+      Origin = 'TypeID'
+    end
+    object FDQueryLoansCreatedByUserID: TIntegerField
+      FieldName = 'CreatedByUserID'
+      Origin = 'CreatedByUserID'
+    end
+  end
+  object FDQueryBorrowed: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'SELECT '
+      '  T.Id,'
+      '  T.OwnerUserID,'
+      '  T.TypeID,'
+      '  '#39'borrowed'#39' AS Direction,'
+      '  CAST(E1.Name AS TEXT) AS Counterparty,'
+      '  CAST(Types.TypeName AS TEXT) AS ItemType,'
+      '  T.Amount,'
+      '  T.StartDate,'
+      '  T.DueDate,'
+      '  T.Returned,'
+      '  CAST(T.ItemDescription AS TEXT) AS ItemDescription,'
+      '  CAST(T.Notes AS TEXT) AS Notes,'
+      '  CreatedByUserId'
+      'FROM Transactions T'
+      'JOIN Entities AS E1 ON T.OwnerUserID = E1.Id'
+      'JOIN Types ON T.TypeID = Types.Id'
+      
+        'WHERE T.OtherUserID = (SELECT Id FROM Entities WHERE UserId = :u' +
+        'id)'
+      'ORDER BY T.StartDate DESC;'
+      '')
+    Left = 975
+    Top = 152
+    ParamData = <
+      item
+        Name = 'UID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+    object FDQueryBorrowedId: TIntegerField
+      FieldName = 'Id'
+      Origin = 'Id'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object FDQueryBorrowedDirection: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Direction'
+      Origin = 'Direction'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryBorrowedCounterparty: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Counterparty'
+      Origin = 'Counterparty'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryBorrowedItemType: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemType'
+      Origin = 'ItemType'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryBorrowedAmount: TFloatField
+      FieldName = 'Amount'
+      Origin = 'Amount'
+    end
+    object FDQueryBorrowedStartDate: TDateField
+      FieldName = 'StartDate'
+      Origin = 'StartDate'
+    end
+    object FDQueryBorrowedDueDate: TDateField
+      FieldName = 'DueDate'
+      Origin = 'DueDate'
+    end
+    object FDQueryBorrowedReturned: TBooleanField
+      FieldName = 'Returned'
+      Origin = 'Returned'
+      DisplayValues = 'Tak;Nie'
+    end
+    object FDQueryBorrowedItemDescription: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemDescription'
+      Origin = 'ItemDescription'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryBorrowedNotes: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Notes'
+      Origin = 'Notes'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryBorrowedCreatedByUserID: TIntegerField
+      FieldName = 'CreatedByUserID'
+      Origin = 'CreatedByUserID'
+    end
+  end
+  object DataSourceLoans: TDataSource
+    AutoEdit = False
+    DataSet = FDQueryLoans
+    Left = 760
+    Top = 24
+  end
+  object FDQueryDeleteLoan: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'DELETE FROM Transactions WHERE Id = :id;')
+    Left = 304
+    Top = 984
+    ParamData = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+  end
+  object FDQueryDeleteBorrowing: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'DELETE FROM Transactions WHERE Id = :id;')
+    Left = 56
+    Top = 984
+    ParamData = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+  end
+  object FDQueryTypes: TFDQuery
+    Connection = FDConnection
+    UpdateOptions.UpdateTableName = 'Types'
+    UpdateOptions.KeyFields = 'Id'
+    SQL.Strings = (
+      
+        'SELECT Id, CAST(TypeName AS Text) AS TypeName FROM Types WHERE A' +
+        'ctive = 1;')
+    Left = 976
+    Top = 264
+    object FDQueryTypesId: TFDAutoIncField
+      FieldName = 'Id'
+      Origin = 'Id'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object FDQueryTypesTypeName: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'TypeName'
+      Origin = 'TypeName'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+  end
+  object DataSourceTypes: TDataSource
+    DataSet = FDQueryTypes
+    Left = 760
+    Top = 264
+  end
+  object FDQueryUsers: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'SELECT '
+      '  id, '
+      '  CAST(username AS TEXT) AS UserName, '
+      '  CASE Role '
+      '    WHEN 1 THEN '#39'admin'#39' '
+      '    ELSE '#39'user'#39' '
+      '  END AS Role'
+      'FROM Users'
+      'WHERE Active = 1;'
+      '')
+    Left = 976
+    Top = 488
+    object FDQueryUsersID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object FDQueryUsersUserName: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'UserName'
+      Origin = 'UserName'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryUsersRole: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Role'
+      Origin = 'Role'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+  end
+  object DataSourceUsers: TDataSource
+    DataSet = FDQueryUsers
+    Left = 760
+    Top = 488
+  end
+  object FDQueryAllTransactions: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      '-- transakcje gdzie jeste'#347' w'#322'a'#347'cicielem (lent)'
+      'SELECT'
+      '  T.Id,'
+      '  CAST (E1.Name AS TEXT) AS OwnerName,               '
+      '  CAST (E2.Name AS TEXT) AS OtherName,               '
+      '  Types.TypeName AS ItemTypeName,   '
+      '  '#39'po'#380'yczone komu'#347#39' AS TransactionRole,'
+      '  CAST(E2.Name AS TEXT) AS Counterparty,'
+      '  CAST(Types.TypeName AS TEXT) AS ItemType,'
+      '  T.Amount,'
+      '  T.StartDate,'
+      '  T.DueDate,'
+      '  T.Returned,'
+      '  CAST(T.ItemDescription AS TEXT) AS ItemDescription,'
+      '  CAST(T.Notes AS TEXT) AS Notes,'
+      '  CreatedByUserId'
+      'FROM Transactions T'
+      'JOIN Entities AS E1 ON T.OwnerUserID = E1.Id'
+      'JOIN Entities AS E2 ON T.OtherUserID = E2.Id'
+      'JOIN Types ON T.TypeID = Types.Id'
+      
+        'WHERE T.OwnerUserID = (SELECT Id FROM Entities WHERE UserId = :u' +
+        'id)'
+      ''
+      'UNION ALL'
+      ''
+      '-- transakcje gdzie jeste'#347' po'#380'yczkobiorc'#261' (borrowed)'
+      'SELECT'
+      '  T.Id,'
+      '  E1.Name AS OwnerName,               -- zamiast OwnerUserID'
+      '  E2.Name AS OtherName,               -- zamiast OtherUserID'
+      '  Types.TypeName AS ItemTypeName,     -- zamiast TypeID'
+      '  '#39'po'#380'yczone mnie'#39' AS TransactionRole,'
+      '  CAST(E1.Name AS TEXT) AS Counterparty,'
+      '  CAST(Types.TypeName AS TEXT) AS ItemType,'
+      '  T.Amount,'
+      '  T.StartDate,'
+      '  T.DueDate,'
+      '  T.Returned,'
+      '  CAST(T.ItemDescription AS TEXT) AS ItemDescription,'
+      '  CAST(T.Notes AS TEXT) AS Notes,'
+      '  CreatedByUserId'
+      'FROM Transactions T'
+      'JOIN Entities AS E1 ON T.OwnerUserID = E1.Id'
+      'JOIN Entities AS E2 ON T.OtherUserID = E2.Id'
+      'JOIN Types ON T.TypeID = Types.Id'
+      
+        'WHERE T.OtherUserID = (SELECT Id FROM Entities WHERE UserId = :u' +
+        'id)'
+      ''
+      'ORDER BY StartDate DESC;'
+      '')
+    Left = 976
+    Top = 384
+    ParamData = <
+      item
+        Name = 'UID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+    object FDQueryAllTransactionsId: TIntegerField
+      FieldName = 'Id'
+      Origin = 'Id'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object FDQueryAllTransactionsItemTypeName: TWideMemoField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemTypeName'
+      Origin = 'TypeName'
+      ProviderFlags = []
+      ReadOnly = True
+      BlobType = ftWideMemo
+    end
+    object FDQueryAllTransactionsTransactionRole: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'TransactionRole'
+      Origin = 'TransactionRole'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsCounterparty: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Counterparty'
+      Origin = 'Counterparty'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsItemType: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemType'
+      Origin = 'ItemType'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsAmount: TFloatField
+      FieldName = 'Amount'
+      Origin = 'Amount'
+    end
+    object FDQueryAllTransactionsStartDate: TDateField
+      FieldName = 'StartDate'
+      Origin = 'StartDate'
+    end
+    object FDQueryAllTransactionsDueDate: TDateField
+      FieldName = 'DueDate'
+      Origin = 'DueDate'
+    end
+    object FDQueryAllTransactionsReturned: TBooleanField
+      FieldName = 'Returned'
+      Origin = 'Returned'
+    end
+    object FDQueryAllTransactionsItemDescription: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'ItemDescription'
+      Origin = 'ItemDescription'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsNotes: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Notes'
+      Origin = 'Notes'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsOwnerName: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'OwnerName'
+      Origin = 'OwnerName'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsOtherName: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'OtherName'
+      Origin = 'OtherName'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryAllTransactionsCreatedByUserID: TIntegerField
+      FieldName = 'CreatedByUserID'
+      Origin = 'CreatedByUserID'
+    end
+  end
+  object DataSourceAllTransactions: TDataSource
+    DataSet = FDQueryAllTransactions
+    Left = 760
+    Top = 384
+  end
+  object FDQueryGetUserData: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'SELECT'
+      '  CAST(Username AS VARCHAR) AS Username,'
+      '  CAST(Password AS VARCHAR) AS Password,'
+      '  Role'
+      'FROM Users'
+      'WHERE ID = :UserID;'
+      '')
+    Left = 304
+    Top = 216
+    ParamData = <
+      item
+        Name = 'USERID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+  end
+  object FDCommandUpdateUsrPass: TFDCommand
+    Connection = FDConnection
+    CommandText.Strings = (
+      'UPDATE Users SET Username = :u, Password = :p WHERE ID = :id')
+    ParamData = <
+      item
+        Name = 'U'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'P'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+    Left = 72
+    Top = 216
+  end
+  object FDQueryUpdateTransaction: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'UPDATE Transactions'
+      'SET'
+      '  OwnerUserID = :OwnerUserID,'
+      '  OtherUserID = :OtherUserID,'
+      '  TypeID = :TypeID,'
+      '  ItemDescription = :ItemDescription,'
+      '  Amount = :Amount,'
+      '  StartDate = :StartDate,'
+      '  DueDate = :DueDate,'
+      '  Returned = :Returned,'
+      '  Photo = :Photo,'
+      '  Notes = :Notes'
+      'WHERE id = :id'
+      '')
+    Left = 296
+    Top = 544
+    ParamData = <
+      item
+        Name = 'OWNERUSERID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'OTHERUSERID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TYPEID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ITEMDESCRIPTION'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'AMOUNT'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'STARTDATE'
+        DataType = ftDate
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'DUEDATE'
+        DataType = ftDate
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'RETURNED'
+        DataType = ftBoolean
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'PHOTO'
+        DataType = ftBlob
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'NOTES'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FDQuerySingleTransaction: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'SELECT *'
+      'FROM Transactions'
+      'WHERE id = :id'
+      '')
+    Left = 528
+    Top = 544
+    ParamData = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end>
+  end
+  object FDQueryAddUser: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'INSERT INTO Users (Username, Password) VALUES (:u, :p)')
+    Left = 224
+    Top = 120
+    ParamData = <
+      item
+        Name = 'U'
+        DataType = ftString
+        ParamType = ptInput
+        Value = 'kot'
+      end
+      item
+        Name = 'P'
+        DataType = ftString
+        ParamType = ptInput
+        Value = 'kot'
+      end>
+  end
+  object FDQueryEntities: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      
+        'SELECT Id, UserId, CAST(Name AS Text) AS Name FROM Entities WHER' +
+        'E Active = 1;')
+    Left = 976
+    Top = 608
+    object FDQueryEntitiesId: TFDAutoIncField
+      FieldName = 'Id'
+      Origin = 'Id'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object FDQueryEntitiesName: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'Name'
+      Origin = 'Name'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object FDQueryEntitiesUserId: TIntegerField
+      FieldName = 'UserId'
+      Origin = 'UserId'
+      Required = True
+    end
+  end
+  object DataSourceEntities: TDataSource
+    DataSet = FDQueryEntities
+    Left = 760
+    Top = 608
+  end
+  object FDQueryAddType: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'INSERT INTO Types (TypeName) VALUES (:TypeName);')
+    Left = 80
+    Top = 312
+    ParamData = <
+      item
+        Name = 'TYPENAME'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FDQueryRemoveType: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'DELETE FROM Types WHERE Id = :Id;')
+    Left = 256
+    Top = 416
+    ParamData = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FDQueryAddEntity: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'INSERT INTO Entities (Name, ModId, ModId)'
+      'VALUES (:EntityName, :ModId, :UserId);'
+      '')
+    Left = 72
+    Top = 744
+    ParamData = <
+      item
+        Name = 'ENTITYNAME'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MODID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'USERID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FDQueryRemoveEntity: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'DELETE FROM Entities WHERE Id = :Id;')
+    Left = 520
+    Top = 648
+    ParamData = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FDQueryEditEntity: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'UPDATE Entities '
+      'SET Name = :name, ModId = :usrId, Date = CURRENT_TIMESTAMP '
+      'WHERE Id = :id'
+      '')
+    Left = 280
+    Top = 744
+    ParamData = <
+      item
+        Name = 'NAME'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'USRID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+    object FDQueryEditEntityId: TFDAutoIncField
+      FieldName = 'Id'
+      Origin = 'Id'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object FDQueryEditEntityName: TWideMemoField
+      FieldName = 'Name'
+      Origin = 'Name'
+      Required = True
+      BlobType = ftWideMemo
+    end
+    object FDQueryEditEntityModId: TIntegerField
+      FieldName = 'ModId'
+      Origin = 'ModId'
+    end
+  end
+  object FDQueryEditType: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'UPDATE Types'
+      'SET TypeName = :name'
+      'WHERE Id = :id;')
+    Left = 80
+    Top = 416
+    ParamData = <
+      item
+        Name = 'NAME'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FDQueryDeactivateUser: TFDQuery
+    Connection = FDConnection
+    Left = 504
+    Top = 216
+  end
+  object FDQueryCheckUser: TFDQuery
+    Connection = FDConnection
+    Left = 392
+    Top = 120
+  end
+  object FDQueryReactivateUser: TFDQuery
+    Connection = FDConnection
+    Left = 576
+    Top = 120
+  end
+  object FDQueryCheckType: TFDQuery
+    Connection = FDConnection
+    Left = 248
+    Top = 312
+  end
+  object FDQueryReactivateType: TFDQuery
+    Connection = FDConnection
+    Left = 440
+    Top = 312
+  end
+  object FDQueryCheckEntity: TFDQuery
+    Connection = FDConnection
+    Left = 72
+    Top = 648
+  end
+  object FDQuerySyncEntities: TFDQuery
+    Connection = FDConnection
+    Left = 520
+    Top = 752
+  end
+  object FDQuerySearch: TFDQuery
+    Connection = FDConnection
+    Left = 56
+    Top = 1088
+  end
+  object FDQueryUpdateEntityName: TFDQuery
+    Connection = FDConnection
+    Left = 280
+    Top = 648
+  end
+  object FDQueryAddTransaction: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'INSERT INTO Transactions'
+      
+        '(OwnerUserID, OtherUserID, ItemDescription, Amount, StartDate, D' +
+        'ueDate, Photo, Returned, Notes, TypeID, CreatedByUserID)'
+      'VALUES'
+      
+        '(:OwnerUserID, :OtherUserID, :ItemDescription, :Amount, :StartDa' +
+        'te, :DueDate, :Photo, :Returned, :Notes, :TypeID, :CreatedByUser' +
+        'ID)'
+      '')
+    Left = 72
+    Top = 544
+    ParamData = <
+      item
+        Name = 'OWNERUSERID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'OTHERUSERID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ITEMDESCRIPTION'
+        ParamType = ptInput
+      end
+      item
+        Name = 'AMOUNT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'STARTDATE'
+        ParamType = ptInput
+      end
+      item
+        Name = 'DUEDATE'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PHOTO'
+        ParamType = ptInput
+      end
+      item
+        Name = 'RETURNED'
+        ParamType = ptInput
+      end
+      item
+        Name = 'NOTES'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TYPEID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'CREATEDBYUSERID'
+        ParamType = ptInput
+      end>
+  end
+end

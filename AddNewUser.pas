@@ -1,0 +1,148 @@
+﻿unit AddNewUser;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Imaging.pngimage,
+  Vcl.ExtCtrls, DataModule, System.Hash;
+
+type
+  TForm4 = class(TForm)
+    PBackground: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Image1: TImage;
+    EUsername: TEdit;
+    ENewPass: TEdit;
+    BReset: TButton;
+    procedure BResetClick(Sender: TObject);
+    procedure OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form4: TForm4;
+
+implementation
+
+{$R *.dfm}
+
+function HashPassword(const Password: string): string;
+begin
+  Result := UpperCase(THashSHA2.GetHashString(Password));
+end;
+
+procedure TForm4.BResetClick(Sender: TObject);
+var
+  username, passwordHash: string;
+  newUserId, entityId: Integer;
+begin
+  username := Trim(EUsername.Text);
+  passwordHash := HashPassword(Trim(ENewPass.Text));
+
+  if (username = '') or (passwordHash = '') then
+  begin
+    ShowMessage('Uzupełnij wszystkie pola.');
+    Exit;
+  end;
+
+  with DataModule1.FDQueryCheckUser do
+  begin
+    SQL.Text := 'SELECT Id, Active FROM Users WHERE Username = :u';
+    ParamByName('u').AsString := username;
+    Open;
+
+    if not IsEmpty then
+    begin
+      newUserId := FieldByName('Id').AsInteger;
+
+      if FieldByName('Active').AsInteger = 0 then
+      begin
+        with DataModule1.FDQueryReactivateUser do
+        begin
+          SQL.Text :=
+            'UPDATE Users SET Password = :p, Active = 1 WHERE Username = :u';
+          ParamByName('u').AsString := username;
+          ParamByName('p').AsString := passwordHash;
+          ExecSQL;
+        end;
+        ShowMessage('Użytkownik został reaktywowany.');
+      end
+      else
+      begin
+        ShowMessage('Użytkownik już istnieje. Zresetuj hasło.');
+      end;
+    end
+    else
+    begin
+      with DataModule1.FDQueryAddUser do
+      begin
+        SQL.Text :=
+          'INSERT INTO Users (Username, Password, Active) VALUES (:u, :p, 1)';
+        ParamByName('u').AsString := username;
+        ParamByName('p').AsString := passwordHash;
+        ExecSQL;
+
+        SQL.Text := 'SELECT last_insert_rowid() AS NewId';
+        Open;
+        newUserId := FieldByName('NewId').AsInteger;
+        Close;
+      end;
+      ShowMessage('Użytkownik został dodany.');
+    end;
+
+    Close;
+  end;
+
+  with DataModule1.FDQuerySyncEntities do
+  begin
+    SQL.Text := 'SELECT Id FROM Entities WHERE Name = :n LIMIT 1';
+    ParamByName('n').AsString := username;
+    Open;
+
+    if not IsEmpty then
+    begin
+      entityId := FieldByName('Id').AsInteger;
+      Close;
+
+      SQL.Text := 'UPDATE Entities SET UserId = :uid WHERE Id = :eid';
+      ParamByName('uid').AsInteger := newUserId;
+      ParamByName('eid').AsInteger := entityId;
+      ExecSQL;
+    end
+    else
+    begin
+      Close;
+      SQL.Text := 'INSERT INTO Entities (Name, UserId, ModId, Date, Active) ' +
+        'VALUES (:n, :uid, :modid, datetime(''now''), 1)';
+      ParamByName('n').AsString := username;
+      ParamByName('uid').AsInteger := newUserId;
+      ParamByName('modid').AsInteger := newUserId;
+      ExecSQL;
+    end;
+
+    Close;
+  end;
+
+  DataModule1.FDConnection.Commit;
+  DataModule1.FDQueryUsers.Refresh;
+  DataModule1.FDQueryEntities.Refresh;
+
+  Close;
+end;
+
+procedure TForm4.OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+    BResetClick(Sender)
+  else if Key = VK_ESCAPE then
+    Close;
+end;
+
+end.

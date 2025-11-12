@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.136,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\Unit8.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\ManageUsers.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.073,=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\Unit8.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.266,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit2.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\MainScreen.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.604,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassScreen.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPass.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.118,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\Unit4.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\AddNewUser.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.602,C:\Users\Zuzia\Desktop\Delphi Hackaton\MainForm.pas=C:\Users\Zuzia\Desktop\Delphi Hackaton\Pożyczkomat.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.376,C:\Users\Zuzia\Desktop\Delphi_Hackaton\LoginScreen.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\MainForm.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.136,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\Unit8.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\ManageUsers.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.498,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\AppSettings.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\SettingsScreen.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.182,C:\Users\Zuzia\Desktop\Delphi Hackaton\Pożyczkomat.dfm=C:\Users\Zuzia\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.601,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit5.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\AddEditScreen.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.066,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\UserSettings.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\Unit7.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.542,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\SettingsScreen.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\AppSettings.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.066,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\UserSettings.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\Unit7.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.856,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassword.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.275,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Untitled1.xml</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.523,C:\Users\Zuzia\Desktop\Delphi_Hackaton\config.xml=C:\Users\Zuzia\Desktop\Delphi_Hackaton\pozyczkomat.xml</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.315,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit4.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\DetailsScreen.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.256,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.046,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit1.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\DataModule.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.118,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\Unit4.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\AddNewUser.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.642,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit6.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.266,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit2.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\MainScreen.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.586,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.163,=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\Unit4.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.952,C:\Users\Zuzia\Desktop\Delphi_Hackaton\pozyczkomat.xml=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Untitled1.xml</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.256,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Pożyczkomat.dproj=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Poyyczkomat.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.604,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassScreen.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPass.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.768,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.300,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.498,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\AppSettings.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\SettingsScreen.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.856,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassword.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.141,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.848,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.046,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit1.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\DataModule.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.727,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPass.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.404,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPass.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassScreen.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.602,C:\Users\Zuzia\Desktop\Delphi Hackaton\MainForm.dfm=C:\Users\Zuzia\Desktop\Delphi Hackaton\Pożyczkomat.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.445,C:\Users\Zuzia\Desktop\Delphi_Hackaton\SettingsScreen.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit6.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.376,C:\Users\Zuzia\Desktop\Delphi_Hackaton\LoginScreen.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\MainForm.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.103,C:\Users\Zuzia\Desktop\Delphi Hackaton\Pożyczkomat.dproj=C:\Users\Zuzia\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.601,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit5.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\AddEditScreen.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.651,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v3\DetailsScreen.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.364,=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\Unit7.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.727,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPass.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit3.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.182,C:\Users\Zuzia\Desktop\Delphi Hackaton\Pożyczkomat.pas=C:\Users\Zuzia\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.735,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassword.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.445,C:\Users\Zuzia\Desktop\Delphi_Hackaton\SettingsScreen.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit6.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.404,C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPass.dfm=C:\Users\Zuzia\Desktop\Delphi_Hackaton\ResetPassScreen.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.252,=C:\Users\Zuzia\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.027,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Poyyczkomat.dproj=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Pozyczkomat.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.967,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit5.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.542,C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\SettingsScreen.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton_versions\Delphi_Hackaton_v2\AppSettings.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.630,=C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit4.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.315,C:\Users\Zuzia\Desktop\Delphi_Hackaton\Unit4.pas=C:\Users\Zuzia\Desktop\Delphi_Hackaton\DetailsScreen.pas</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="AddEditScreen.pas"/>
+    <File Path="AddEditScreen.dfm"/>
+    <File Path="config.xml"/>
+    <File Path="DataModule.pas"/>
+    <File Path="DataModule.dfm"/>
+    <File Path="LoginScreen.pas"/>
+    <File Path="LoginScreen.dfm"/>
+    <File Path="MainScreen.pas"/>
+    <File Path="MainScreen.dfm"/>
+    <File Path="ResetPass.pas"/>
+    <File Path="ResetPass.dfm"/>
+    <File Path="SettingsScreen.pas"/>
+    <File Path="SettingsScreen.dfm"/>
+    <File Path="UserSettings.pas"/>
+    <File Path="UserSettings.dfm"/>
+    <File Path="AddNewUser.pas"/>
+    <File Path="AddNewUser.dfm"/>
+    <File Path="ManageUsers.pas"/>
+    <File Path="ManageUsers.dfm"/>
+  </ProjectSortOrder>
+</BorlandProject>

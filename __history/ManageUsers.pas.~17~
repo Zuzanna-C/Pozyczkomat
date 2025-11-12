@@ -1,0 +1,187 @@
+﻿unit ManageUsers;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  DataModule, System.Hash;
+
+type
+  TForm8 = class(TForm)
+    Panel1: TPanel;
+    LabelUsername: TLabel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    ButtonCancel: TButton;
+    ButtonSave: TButton;
+    CheckBox1: TCheckBox;
+    procedure ButtonSaveClick(Sender: TObject);
+  private
+    FUserID: Integer;
+    FIsEditMode: Boolean;
+    procedure LoadUserData(UserID: Integer);
+    function HashPassword(const Password: string): string;
+  public
+    procedure InitForm(AddMode: Boolean; UserID: Integer = -1);
+  end;
+
+var
+  Form8: TForm8;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm8.InitForm(AddMode: Boolean; UserID: Integer);
+begin
+  FIsEditMode := not AddMode;
+  FUserID := UserID;
+
+  if FIsEditMode then
+    LoadUserData(UserID)
+  else
+  begin
+    Edit1.Text := '';
+    Edit2.Text := '';
+    CheckBox1.Checked := False;
+  end;
+end;
+
+procedure TForm8.LoadUserData(UserID: Integer);
+begin
+  with DataModule1.FDQueryAddUser do
+  begin
+    SQL.Clear;
+    SQL.Text := 'SELECT Username, Role FROM Users WHERE ID = :ID';
+    ParamByName('ID').AsInteger := UserID;
+    Open;
+
+    if not Eof then
+    begin
+      Edit1.Text := FieldByName('Username').AsString;
+      Edit2.Text := '';
+      CheckBox1.Checked := FieldByName('Role').AsInteger = 1;
+    end;
+
+    Close;
+  end;
+end;
+
+function TForm8.HashPassword(const Password: string): string;
+begin
+  Result := UpperCase(THashSHA2.GetHashString(Password));
+end;
+
+procedure TForm8.ButtonSaveClick(Sender: TObject);
+var
+  username, passwordHash: string;
+  role: Integer;
+  newUserId, entityId: Integer;
+begin
+  username := Trim(Edit1.Text);
+  role := Ord(CheckBox1.Checked); // True = 1 (admin), False = 0 (user)
+
+  if username = '' then
+  begin
+    ShowMessage('Uzupełnij nazwę użytkownika.');
+    Exit;
+  end;
+
+  if Trim(Edit2.Text) <> '' then
+    passwordHash := HashPassword(Edit2.Text);
+
+  try
+    with DataModule1.FDQueryAddUser do
+    begin
+      SQL.Clear;
+
+      if FIsEditMode then
+      begin
+        // 🔹 tryb edycji
+        if passwordHash <> '' then
+        begin
+          SQL.Text := 'UPDATE Users SET Username = :u, Password = :p, Role = :r WHERE ID = :id';
+          ParamByName('P').AsString := passwordHash;
+        end
+        else
+        begin
+          SQL.Text := 'UPDATE Users SET Username = :u, Role = :r WHERE ID = :id';
+        end;
+
+        ParamByName('ID').AsInteger := FUserID;
+        ParamByName('U').AsString := username;
+        ParamByName('R').AsInteger := role;
+        ExecSQL;
+
+        newUserId := FUserID; // w edycji ID już znamy
+      end
+      else
+      begin
+        // 🔹 tryb dodawania
+        SQL.Text := 'INSERT INTO Users (Username, Password, Role, Active) VALUES (:u, :p, :r, 1)';
+        ParamByName('U').AsString := username;
+        ParamByName('P').AsString := HashPassword(Edit2.Text);
+        ParamByName('R').AsInteger := role;
+        ExecSQL;
+
+        // Pobranie ID nowo dodanego użytkownika
+        SQL.Text := 'SELECT last_insert_rowid() AS NewId';
+        Open;
+        newUserId := FieldByName('NewId').AsInteger;
+        Close;
+      end;
+    end;
+
+    // 🔹 Synchronizacja z Entities
+    with DataModule1.FDQuerySyncEntities do
+    begin
+      SQL.Text := 'SELECT Id FROM Entities WHERE UserId = :uid LIMIT 1';
+      ParamByName('uid').AsInteger := newUserId;
+      Open;
+
+      if not IsEmpty then
+      begin
+        entityId := FieldByName('Id').AsInteger;
+        Close;
+
+        // aktualizacja istniejącego rekordu
+        SQL.Text := 'UPDATE Entities SET Name = :n, ModId = :modid, Date = datetime(''now''), Active = 1 WHERE Id = :eid';
+        ParamByName('n').AsString := username;
+        ParamByName('modid').AsInteger := newUserId;
+        ParamByName('eid').AsInteger := entityId;
+        ExecSQL;
+      end
+      else
+      begin
+        Close;
+
+        // dodanie nowego rekordu
+        SQL.Text :=
+          'INSERT INTO Entities (Name, UserId, ModId, Date, Active) ' +
+          'VALUES (:n, :uid, :modid, datetime(''now''), 1)';
+        ParamByName('n').AsString := username;
+        ParamByName('uid').AsInteger := newUserId;
+        ParamByName('modid').AsInteger := newUserId;
+        ExecSQL;
+      end;
+
+      Close;
+    end;
+
+    DataModule1.FDQueryUsers.Close;
+    DataModule1.FDQueryUsers.Open;
+    DataModule1.FDQueryEntities.Refresh;
+
+    ShowMessage('Dane użytkownika zostały zapisane.');
+    Close;
+  except
+    on E: Exception do
+      ShowMessage('Błąd: ' + E.Message);
+  end;
+end;
+
+end.
+

@@ -1,0 +1,119 @@
+unit MainForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, FireDAC.Stan.Intf,
+  FireDAC.Comp.Client, FireDAC.DApt, System.Hash, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.SQLite,
+  FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs,
+  FireDAC.Phys.SQLiteWrapper.Stat, FireDAC.VCLUI.Wait, FireDAC.Stan.Param,
+  FireDAC.DatS, FireDAC.DApt.Intf, Data.DB, FireDAC.Comp.DataSet,
+  DataModule, MainScreen, ResetPass;
+
+type
+  TForm1 = class(TForm)
+    PBackground: TPanel;
+    LUser: TLabel;
+    LPassword: TLabel;
+    EUser: TEdit;
+    EPassword: TEdit;
+    BClose: TButton;
+    BLogin: TButton;
+    LForgotPass: TLabel;
+    LWelcome: TLabel;
+    procedure BLoginClick(Sender: TObject);
+    procedure BCloseClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure LForgotPassClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+function HashPassword(const Password: string): string;
+begin
+  Result := UpperCase(THashSHA2.GetHashString(Password));
+end;
+
+procedure TForm1.BCloseClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TForm1.BLoginClick(Sender: TObject);
+var
+  Username, Password: string;
+  LoggedUserID: Integer;
+  MainScreenForm: TForm2;
+begin
+  Username := Trim(EUser.Text);
+  Password := HashPassword(Trim(EPassword.Text));
+
+  DataModule1.FDQuery1.Close;
+  DataModule1.FDQuery1.SQL.Text := 'SELECT * FROM Users WHERE Username = :u AND Password = :p';
+  DataModule1.FDQuery1.ParamByName('u').AsString := Username;
+  DataModule1.FDQuery1.ParamByName('p').AsString := Password;
+  DataModule1.FDQuery1.Open;
+
+
+  begin
+    if not DataModule1.FDQuery1.IsEmpty then
+    begin
+      LoggedUserID := DataModule1.FDQuery1.FieldByName('Id').AsInteger;
+
+      Self.Hide;
+      MainScreenForm := TForm2.Create(Self);
+      try
+        MainScreenForm.LoadUserData(LoggedUserID, Username);
+        MainScreenForm.ShowModal;
+      finally
+        MainScreenForm.Free;
+        Self.Show;
+      end;
+    end
+    else
+      ShowMessage('Nieprawid³owy login lub has³o.');
+  end;
+
+end;
+
+
+
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  DbPath: string;
+begin
+  DataModule1.FDConnection1.Params.Clear;
+  DataModule1.FDConnection1.Params.DriverID := 'SQLite';
+
+  DbPath := ExtractFilePath(ParamStr(0)) + 'pozyczkomat.db';
+
+  DataModule1.FDConnection1.Params.Database := DbPath;
+  DataModule1.FDConnection1.LoginPrompt := False;
+
+  DataModule1.FDConnection1.Connected := True;
+end;
+
+
+procedure TForm1.LForgotPassClick(Sender: TObject);
+begin
+  with TForm3.Create(Self) do
+  try
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
+end.

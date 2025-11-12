@@ -1,0 +1,216 @@
+unit SettingsScreen;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Xml.XMLDoc, Xml.XMLIntf, DataModule, System.Hash, Vcl.Themes;
+
+type
+  TForm6 = class(TForm)
+    Panel2: TPanel;
+    LDetails: TLabel;
+    Panel3: TPanel;
+    Label1: TLabel;
+    BSaveAppS: TButton;
+    Label3: TLabel;
+    CBColorL: TCheckBox;
+    CDL: TColorDialog;
+    BColorL: TButton;
+    Label4: TLabel;
+    CBColorB: TCheckBox;
+    BColorB: TButton;
+    CDB: TColorDialog;
+    ImageLoans: TImage;
+    ImageBorrowed: TImage;
+    Label5: TLabel;
+    ComboBox1: TComboBox;
+    procedure Form6Create(Sender: TObject);
+    procedure BSaveAppSClick(Sender: TObject);
+    procedure BColorBClick(Sender: TObject);
+    procedure BColorLClick(Sender: TObject);
+    procedure BSaveUserSClick(Sender: TObject);
+    procedure UpdateUserCredentials(const NewUsername, NewPassword: string);
+    procedure OnChange(Sender: TObject);
+  private
+    { Private declarations }
+    procedure SaveSettings;
+  public
+    { Public declarations }
+    UserID: Integer;
+  end;
+
+var
+  Form6: TForm6;
+  HighlightLent: Boolean;
+  HighlightBorrowed: Boolean;
+  LentColor: TColor;
+  BorrowedColor: TColor;
+
+implementation
+
+{$R *.dfm}
+
+function HashPassword(const Password: string): string;
+begin
+  Result := UpperCase(THashSHA2.GetHashString(Password));
+end;
+
+procedure TForm6.UpdateUserCredentials(const NewUsername, NewPassword: string);
+var
+  HashedPassword: string;
+begin
+  HashedPassword := HashPassword(NewPassword);
+  with DataModule1.FDCommandUpdateUsrPass do
+  begin
+    Params.Clear;
+    Params.Add.Name := 'u';
+    Params.Add.Name := 'p';
+    Params.Add.Name := 'id';
+
+    Params.ParamByName('u').AsString := NewUsername;
+    Params.ParamByName('p').AsString := HashedPassword;
+    Params.ParamByName('id').AsInteger := Self.UserID;
+
+    Execute;
+  end;
+end;
+
+
+function GetCurrentCredentials(UserID: Integer; out CurrentUsername, CurrentPassword: string): Boolean;
+begin
+  Result := False;
+  with DataModule1.FDQueryGetUserData do
+  begin
+    Close;
+    ParamByName('UserID').AsInteger := UserID;
+    Open;
+
+    if not EOF then
+    begin
+      CurrentUsername := FieldByName('Username').AsString;
+      CurrentPassword := FieldByName('Password').AsString;
+      Result := True;
+    end;
+    Close;
+  end;
+end;
+
+procedure LoadSettings;
+var
+  XMLDoc: IXMLDocument;
+  Root: IXMLNode;
+begin
+  XMLDoc := TXMLDocument.Create(nil);
+  XMLDoc.LoadFromFile('config.xml');
+  XMLDoc.Active := True;
+
+  Root := XMLDoc.DocumentElement;
+
+  HighlightLent := SameText(Root.ChildNodes['HighlightLent'].Text, 'true');
+  HighlightBorrowed := SameText(Root.ChildNodes['HighlightBorrowed'].Text, 'true');
+
+  LentColor := StringToColor(Root.ChildNodes['LentColor'].Text);
+  BorrowedColor := StringToColor(Root.ChildNodes['BorrowedColor'].Text);
+end;
+
+procedure TForm6.SaveSettings;
+var
+  XMLDoc: IXMLDocument;
+  Root: IXMLNode;
+begin
+  XMLDoc := TXMLDocument.Create(nil);
+  XMLDoc.Active := True;
+  XMLDoc.Version := '1.0';
+  XMLDoc.Encoding := 'UTF-8';
+
+  Root := XMLDoc.AddChild('Settings');
+  Root.AddChild('HighlightLent').Text := BoolToStr(CBColorL.Checked, True);
+  Root.AddChild('HighlightBorrowed').Text := BoolToStr(CBColorB.Checked, True);
+  Root.AddChild('LentColor').Text := ColorToString(LentColor);
+  Root.AddChild('BorrowedColor').Text := ColorToString(BorrowedColor);
+
+  XMLDoc.SaveToFile('config.xml');
+  LoadSettings;
+end;
+
+procedure TForm6.BColorBClick(Sender: TObject);
+begin
+  if CDB.Execute then
+  begin
+    BorrowedColor := CDB.Color;
+    ImageBorrowed.Picture.Bitmap.Canvas.Brush.Color := BorrowedColor;
+    ImageBorrowed.Picture.Bitmap.Canvas.FillRect(Rect(0, 0, ImageBorrowed.Width, ImageBorrowed.Height));
+    ImageBorrowed.Refresh;
+  end;
+end;
+
+procedure TForm6.BColorLClick(Sender: TObject);
+begin
+  CDL.Color := LentColor;
+  if CDL.Execute then
+  begin
+    LentColor := CDL.Color;
+    ImageLoans.Picture.Bitmap.Canvas.Brush.Color := LentColor;
+    ImageLoans.Picture.Bitmap.Canvas.FillRect(Rect(0, 0, ImageLoans.Width, ImageLoans.Height));
+    ImageLoans.Refresh;
+  end;
+end;
+
+procedure TForm6.BSaveAppSClick(Sender: TObject);
+begin
+  SaveSettings;
+end;
+
+procedure TForm6.BSaveUserSClick(Sender: TObject);
+var
+  NewUsername, NewPassword: string;
+  CurrentUsername, CurrentPassword: string;
+begin
+  NewUsername := Trim(EUsername.Text);
+  NewPassword := Trim(EPassword.Text);
+
+  if not GetCurrentCredentials(UserID, CurrentUsername, CurrentPassword) then
+  begin
+    ShowMessage('Nie uda³o siê pobraæ danych u¿ytkownika.');
+    Exit;
+  end;
+
+  if NewUsername = '' then
+    NewUsername := CurrentUsername;
+
+  if NewPassword = '' then
+    NewPassword := CurrentPassword;
+
+  UpdateUserCredentials(NewUsername, NewPassword);
+end;
+
+
+procedure TForm6.Form6Create(Sender: TObject);
+begin
+  ComboBox1.Items.Clear;
+  ComboBox1.Items.AddStrings(TStyleManager.StyleNames);
+  ComboBox1.ItemIndex := ComboBox1.Items.IndexOf(TStyleManager.ActiveStyle.Name);
+
+  LoadSettings;
+  CBColorL.Checked := HighlightLent;
+  CBColorB.Checked := HighlightBorrowed;
+
+  ImageLoans.Picture.Bitmap.SetSize(ImageLoans.Width, ImageLoans.Height);
+  ImageLoans.Picture.Bitmap.Canvas.Brush.Color := LentColor;
+  ImageLoans.Picture.Bitmap.Canvas.FillRect(Rect(0, 0, ImageLoans.Width, ImageLoans.Height));
+
+  ImageBorrowed.Picture.Bitmap.SetSize(ImageBorrowed.Width, ImageBorrowed.Height);
+  ImageBorrowed.Picture.Bitmap.Canvas.Brush.Color := BorrowedColor;
+  ImageBorrowed.Picture.Bitmap.Canvas.FillRect(Rect(0, 0, ImageBorrowed.Width, ImageBorrowed.Height));
+end;
+
+procedure TForm6.OnChange(Sender: TObject);
+begin
+  TStyleManager.TrySetStyle(ComboBox1.Text);
+  BringToFront;
+  SetFocus;
+end;
+
+end.

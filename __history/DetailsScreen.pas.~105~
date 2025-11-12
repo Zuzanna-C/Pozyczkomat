@@ -1,0 +1,315 @@
+unit DetailsScreen;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids, System.Generics.Collections,
+  DataModule, AddEditScreen, Vcl.Buttons, Vcl.DBCtrls, Vcl.ComCtrls;
+
+type
+  TForm4 = class(TForm)
+    Panel2: TPanel;
+    Panel3: TPanel;
+    DBGridGeneric: TDBGrid;
+    BAdd: TButton;
+    BEdit: TButton;
+    BRemove: TButton;
+    Panel1: TPanel;
+    LDetails: TLabel;
+    Label2: TLabel;
+    DBNavigatorGeneric: TDBNavigator;
+    Label1: TLabel;
+    LUser: TLabel;
+    Label4: TLabel;
+    CheckBoxReturned: TCheckBox;
+    BFilter: TButton;
+    BClear: TButton;
+    DBLCBUsers: TDBLookupComboBox;
+    DBLCBTypes: TDBLookupComboBox;
+    procedure Button4Click(Sender: TObject);
+    procedure BRemoveClick(Sender: TObject);
+    procedure BAddClick(Sender: TObject);
+    procedure BClearClick(Sender: TObject);
+    procedure BFilterClick(Sender: TObject);
+    procedure BEditClick(Sender: TObject);
+  private
+    FWhichDetails: string;
+    procedure RebuildGridColumns;
+  public
+    procedure InitializeDetailsScreen(const WhichDetails: string; _userID: Integer);
+  end;
+
+var
+  Form4: TForm4;
+  userID: Integer;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm4.InitializeDetailsScreen(const WhichDetails: string; _userID: Integer);
+begin
+  userID := _userID;
+  FWhichDetails := WhichDetails;
+
+  DBGridGeneric.Visible := True;
+  DBNavigatorGeneric.Visible := True;
+
+  if not DataModule1.FDQueryUsers.Active then
+    DataModule1.FDQueryUsers.Open;
+
+  if not DataModule1.FDQueryTypes.Active then
+    DataModule1.FDQueryTypes.Open;
+
+  if SameText(WhichDetails, 'Loans') then
+  begin
+    LDetails.Caption := 'Details of your loans';
+    with DataModule1.FDQueryLoans do
+    begin
+      Close;
+      ParamByName('uid').AsInteger := userID;
+      Open;
+    end;
+    DBGridGeneric.DataSource := DataModule1.DataSourceLoans;
+    DBNavigatorGeneric.DataSource := DataModule1.DataSourceLoans;
+    RebuildGridColumns;
+  end
+  else if SameText(WhichDetails, 'Borrowed') then
+  begin
+    LDetails.Caption := 'Details of your borrowings';
+    with DataModule1.FDQueryBorrowed do
+    begin
+      Close;
+      ParamByName('uid').AsInteger := userID;
+      Open;
+    end;
+    DBGridGeneric.DataSource := DataModule1.DataSourceBorrowed;
+    DBNavigatorGeneric.DataSource := DataModule1.DataSourceBorrowed;
+    RebuildGridColumns;
+  end
+  else
+  begin
+    LDetails.Caption := 'Unknown detail type';
+    DBGridGeneric.Visible := False;
+    DBNavigatorGeneric.Visible := False;
+  end;
+end;
+
+procedure TForm4.RebuildGridColumns;
+var
+  i: Integer;
+  ds: TDataSet;
+  col: TColumn;
+  fieldName, displayName: string;
+  ColumnNames: TDictionary<string, string>;
+  ColumnWidths: TDictionary<string, Integer>;
+begin
+  DBGridGeneric.Columns.Clear;
+
+  ColumnNames := TDictionary<string, string>.Create;
+  ColumnWidths := TDictionary<string, Integer>.Create;
+  try
+    // Przyjazne nazwy kolumn
+    ColumnNames.Add('itemtype', 'Type');
+    ColumnNames.Add('itemdescription', 'Item');
+    ColumnNames.Add('amount', 'Amount');
+    ColumnNames.Add('startdate', 'Start Date');
+    ColumnNames.Add('duetdate', 'Due Date');
+    ColumnNames.Add('returned', 'Returned');
+    ColumnNames.Add('notes', 'Notes');
+    ColumnNames.Add('otheruserid', 'With User');
+    ColumnNames.Add('typeid', 'Category');
+
+    // Preferowane szerokoœci kolumn
+    ColumnWidths.Add('itemtype', 100);
+    ColumnWidths.Add('itemdescription', 200);
+    ColumnWidths.Add('amount', 100);
+    ColumnWidths.Add('startdate', 100);
+    ColumnWidths.Add('duetdate', 100);
+    ColumnWidths.Add('returned', 100);
+    ColumnWidths.Add('notes', 200);
+    ColumnWidths.Add('otheruserid', 120);
+    ColumnWidths.Add('typeid', 120);
+
+    ds := DBGridGeneric.DataSource.DataSet;
+    if Assigned(ds) and ds.Active then
+    begin
+      for i := 0 to ds.FieldCount - 1 do
+      begin
+        fieldName := LowerCase(ds.Fields[i].FieldName);
+        if fieldName = 'id' then Continue;
+
+        col := DBGridGeneric.Columns.Add;
+        col.FieldName := ds.Fields[i].FieldName;
+        col.Alignment := taCenter;
+        col.Title.Alignment := taCenter;
+        DBGridGeneric.TitleFont.Style := [fsBold];
+
+        if ColumnNames.TryGetValue(fieldName, displayName) then
+          col.Title.Caption := displayName
+        else
+          col.Title.Caption := ds.Fields[i].FieldName;
+      end;
+    end;
+  finally
+    ColumnNames.Free;
+    ColumnWidths.Free;
+  end;
+end;
+
+procedure TForm4.BAddClick(Sender: TObject);
+var
+  mode: TTransactionMode;
+begin
+  if SameText(FWhichDetails, 'Loans') then
+    mode := tmLent
+  else if SameText(FWhichDetails, 'Borrowed') then
+    mode := tmBorrowed
+  else
+    Exit;
+
+  with TForm5.Create(Self) do
+  try
+    InitForm(mode, userID);
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
+
+procedure TForm4.BClearClick(Sender: TObject);
+begin
+  CheckBoxReturned.Checked := False;
+
+  with DataModule1.FDQueryLoans do
+  begin
+    Filtered := False;
+    Close;
+    ParamByName('uid').AsInteger := userID;
+    Open;
+  end;
+end;
+
+procedure TForm4.BEditClick(Sender: TObject);
+var
+  recordID: Integer;
+  mode: TTransactionMode;
+begin
+  if DBGridGeneric.DataSource.DataSet.IsEmpty then
+    Exit;
+
+  recordID := DBGridGeneric.DataSource.DataSet.FieldByName('id').AsInteger;
+
+  if SameText(FWhichDetails, 'Loans') then
+    mode := tmLent
+  else if SameText(FWhichDetails, 'Borrowed') then
+    mode := tmBorrowed
+  else
+    Exit;
+
+  with TForm5.Create(Self) do
+  try
+    InitForm(mode, userID, recordID);
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
+
+procedure TForm4.BFilterClick(Sender: TObject);
+var
+  filterText: string;
+  hasFilter: Boolean;
+begin
+  hasFilter := False;
+  filterText := '';
+
+  // Filtrowanie po checkboxie "Returned"
+  if CheckBoxReturned.Checked then
+  begin
+    filterText := filterText + 'Returned = 1';
+    hasFilter := True;
+  end;
+
+  // Filtrowanie po u¿ytkowniku
+  if not VarIsNull(DBLCBUsers.KeyValue) then
+  begin
+    if hasFilter then
+      filterText := filterText + ' AND ';
+    filterText := filterText + 'OtherUserID = ' + IntToStr(Integer(DBLCBUsers.KeyValue));
+    hasFilter := True;
+  end;
+
+  if not VarIsNull(DBLCBTypes.KeyValue) then
+  begin
+    if hasFilter then
+      filterText := filterText + ' AND ';
+    filterText := filterText + 'TypeID = ' + IntToStr(Integer(DBLCBTypes.KeyValue));
+    hasFilter := True;
+  end;
+
+  with DBGridGeneric.DataSource.DataSet do
+  begin
+    Filter := filterText;
+    Filtered := hasFilter;
+  end;
+end;
+
+
+procedure TForm4.BRemoveClick(Sender: TObject);
+var
+  RecordID: Integer;
+begin
+  if SameText(FWhichDetails, 'Loans') then
+  begin
+    if not DataModule1.FDQueryLoans.IsEmpty then
+    begin
+      if MessageDlg('Delete this loan?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+      begin
+        RecordID := DataModule1.FDQueryLoansId.AsInteger;
+        DataModule1.FDQueryLoans.Close;
+
+        with DataModule1.FDQueryDeleteLoan do
+        begin
+          ParamByName('id').AsInteger := RecordID;
+          ExecSQL;
+        end;
+
+        DataModule1.FDQueryLoans.ParamByName('uid').AsInteger := userID;
+        DataModule1.FDQueryLoans.Open;
+      end;
+    end;
+  end
+  else if SameText(FWhichDetails, 'Borrowed') then
+  begin
+    if not DataModule1.FDQueryBorrowed.IsEmpty then
+    begin
+      if MessageDlg('Delete this borrowing?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+      begin
+        RecordID := DataModule1.FDQueryBorrowedId.AsInteger;
+        DataModule1.FDQueryBorrowed.Close;
+
+        with DataModule1.FDQueryDeleteBorrowing do
+        begin
+          ParamByName('id').AsInteger := RecordID;
+          ExecSQL;
+        end;
+
+        DataModule1.FDQueryBorrowed.ParamByName('uid').AsInteger := userID;
+        DataModule1.FDQueryBorrowed.Open;
+      end;
+    end;
+  end;
+end;
+
+
+procedure TForm4.Button4Click(Sender: TObject);
+begin
+  Close;
+end;
+end.
+

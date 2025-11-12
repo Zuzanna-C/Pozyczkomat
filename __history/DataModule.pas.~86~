@@ -1,0 +1,116 @@
+unit DataModule;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.SQLite,
+  FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs,
+  FireDAC.Phys.SQLiteWrapper.Stat, FireDAC.VCLUI.Wait, Data.DB,
+  FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
+  FireDAC.DApt, FireDAC.Comp.DataSet;
+
+type
+  TDataModule1 = class(TDataModule)
+    FDConnection: TFDConnection;
+    FDQueryLogin: TFDQuery;
+    DataSourceBorrowed: TDataSource;
+    FDQueryLoans: TFDQuery;
+    FDQueryBorrowed: TFDQuery;
+    DataSourceLoans: TDataSource;
+    FDQueryDeleteLoan: TFDQuery;
+    FDQueryDeleteBorrowing: TFDQuery;
+    FDQueryTypes: TFDQuery;
+    DataSourceTypes: TDataSource;
+    FDQueryUsers: TFDQuery;
+    DataSourceUsers: TDataSource;
+    FDQueryAllTransactions: TFDQuery;
+    DataSourceAllTransactions: TDataSource;
+    FDQueryLoansId: TIntegerField;
+    FDQueryLoansDirection: TWideStringField;
+    FDQueryLoansCounterparty: TWideStringField;
+    FDQueryLoansItemType: TWideStringField;
+    FDQueryLoansAmount: TFloatField;
+    FDQueryLoansStartDate: TDateField;
+    FDQueryLoansDueDate: TDateField;
+    FDQueryLoansReturned: TBooleanField;
+    FDQueryLoansItemDescription: TWideStringField;
+    FDQueryLoansNotes: TWideStringField;
+    FDQueryBorrowedId: TIntegerField;
+    FDQueryBorrowedDirection: TWideStringField;
+    FDQueryBorrowedCounterparty: TWideStringField;
+    FDQueryBorrowedItemType: TWideStringField;
+    FDQueryBorrowedAmount: TFloatField;
+    FDQueryBorrowedStartDate: TDateField;
+    FDQueryBorrowedDueDate: TDateField;
+    FDQueryBorrowedReturned: TBooleanField;
+    FDQueryBorrowedItemDescription: TWideStringField;
+    FDQueryBorrowedNotes: TWideStringField;
+    FDQueryLoansOtherUserID: TIntegerField;
+    FDQueryLoansTypeID: TIntegerField;
+    FDQueryGetUserData: TFDQuery;
+    FDCommandUpdateUsrPass: TFDCommand;
+    FDQueryUpdateTransaction: TFDQuery;
+    FDQuerySingleTransaction: TFDQuery;
+    FDQueryAddUser: TFDQuery;
+    FDQueryEntities: TFDQuery;
+    DataSourceEntities: TDataSource;
+    FDQueryAddType: TFDQuery;
+    FDQueryRemoveType: TFDQuery;
+    FDQueryAddEntity: TFDQuery;
+    FDQueryRemoveEntity: TFDQuery;
+    FDQueryTypesId: TFDAutoIncField;
+    FDQueryTypesTypeName: TWideStringField;
+    FDQueryEditEntity: TFDQuery;
+    FDQueryEditEntityId: TFDAutoIncField;
+    FDQueryEditEntityName: TWideMemoField;
+    FDQueryEditEntityModId: TIntegerField;
+    FDQueryEntitiesId: TFDAutoIncField;
+    FDQueryEntitiesName: TWideStringField;
+    FDQueryEditType: TFDQuery;
+    FDQueryUsersID: TFDAutoIncField;
+    FDQueryUsersUserName: TWideStringField;
+    FDQueryUsersRole: TWideStringField;
+    FDQueryDeactivateUser: TFDQuery;
+    FDQueryCheckUser: TFDQuery;
+    FDQueryReactivateUser: TFDQuery;
+    FDQueryCheckType: TFDQuery;
+    FDQueryReactivateType: TFDQuery;
+    FDQueryCheckEntity: TFDQuery;
+    FDQuerySyncEntities: TFDQuery;
+    FDQuerySearch: TFDQuery;
+    FDQueryEntitiesUserId: TIntegerField;
+    FDQueryLoansCreatedByUserID: TIntegerField;
+    FDQueryBorrowedCreatedByUserID: TIntegerField;
+    FDQueryUpdateEntityName: TFDQuery;
+    FDQueryAddTransaction: TFDQuery;
+    FDQueryAllTransactionsId: TIntegerField;
+    FDQueryAllTransactionsOwnerUserID: TIntegerField;
+    FDQueryAllTransactionsOtherUserID: TIntegerField;
+    FDQueryAllTransactionsTypeID: TIntegerField;
+    FDQueryAllTransactionsTransactionRole: TWideStringField;
+    FDQueryAllTransactionsCounterparty: TWideStringField;
+    FDQueryAllTransactionsItemType: TWideStringField;
+    FDQueryAllTransactionsAmount: TFloatField;
+    FDQueryAllTransactionsStartDate: TDateField;
+    FDQueryAllTransactionsDueDate: TDateField;
+    FDQueryAllTransactionsReturned: TBooleanField;
+    FDQueryAllTransactionsItemDescription: TWideStringField;
+    FDQueryAllTransactionsNotes: TWideStringField;
+    FDQueryAllTransactionsCreatedByUserID: TIntegerField;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DataModule1: TDataModule1;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+{$R *.dfm}
+
+end.

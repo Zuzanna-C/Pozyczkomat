@@ -1,0 +1,83 @@
+unit ResetPassScreen;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  DataModule, System.Hash;
+
+type
+  TForm3 = class(TForm)
+    PBackground: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    EUsername: TEdit;
+    ENewPass: TEdit;
+    BClose: TButton;
+    BReset: TButton;
+    procedure BResetClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm3.BResetClick(Sender: TObject);
+var
+  Username, NewPass, HashedPass: string;
+begin
+  Username := Trim(EUsername.Text);
+  NewPass := Trim(ENewPass.Text);
+
+  if (Username = '') or (NewPass = '') then
+  begin
+    ShowMessage('Proszê podaæ zarówno nazwê u¿ytkownika, jak i nowe has³o.');
+    Exit;
+  end;
+
+  HashedPass := UpperCase(THashSHA2.GetHashString(NewPass));
+
+  with DataModule1.FDQuery1 do
+  begin
+    Close;
+    SQL.Text := 'SELECT COUNT(*) FROM Users WHERE Username = :u';
+    ParamByName('u').AsString := Username;
+    Open;
+
+    if Fields[0].AsInteger = 0 then
+    begin
+      ShowMessage('U¿ytkownik o podanej nazwie nie istnieje.');
+      Close;
+      Exit;
+    end;
+
+    Close;
+
+    DataModule1.FDConnection1.StartTransaction;
+    try
+      SQL.Text := 'UPDATE Users SET Password = :p WHERE Username = :u';
+      ParamByName('p').AsString := HashedPass;
+      ParamByName('u').AsString := Username;
+      ExecSQL;
+      DataModule1.FDConnection1.Commit;
+      ShowMessage('Has³o zosta³o zmienione.');
+    except
+      on E: Exception do
+      begin
+        DataModule1.FDConnection1.Rollback;
+        ShowMessage('B³¹d podczas zmiany has³a: ' + E.Message);
+      end;
+    end;
+  end;
+end;
+
+end.

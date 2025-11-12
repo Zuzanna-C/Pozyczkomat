@@ -1,0 +1,172 @@
+unit ManageUsers;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  DataModule, System.Hash;
+
+type
+  TForm8 = class(TForm)
+    Panel1: TPanel;
+    LabelUsername: TLabel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    ButtonCancel: TButton;
+    ButtonSave: TButton;
+    CheckBox1: TCheckBox;
+    procedure ButtonSaveClick(Sender: TObject);
+  private
+    FUserID: Integer;
+    FIsEditMode: Boolean;
+    procedure LoadUserData(UserID: Integer);
+    function HashPassword(const Password: string): string;
+  public
+    procedure InitForm(AddMode: Boolean; UserID: Integer = -1);
+  end;
+
+var
+  Form8: TForm8;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm8.InitForm(AddMode: Boolean; UserID: Integer);
+begin
+  FIsEditMode := not AddMode;
+  FUserID := UserID;
+
+  if FIsEditMode then
+    LoadUserData(UserID)
+  else
+  begin
+    Edit1.Text := '';
+    Edit2.Text := '';
+    CheckBox1.Checked := False;
+  end;
+end;
+
+procedure TForm8.LoadUserData(UserID: Integer);
+begin
+  with DataModule1.FDQueryAddUser do
+  begin
+    SQL.Clear;
+    SQL.Text := 'SELECT Username, Role FROM Users WHERE ID = :ID';
+    ParamByName('ID').AsInteger := UserID;
+    Open;
+
+    if not Eof then
+    begin
+      Edit1.Text := FieldByName('Username').AsString;
+      Edit2.Text := '';
+      CheckBox1.Checked := FieldByName('Role').AsInteger = 1;
+    end;
+
+    Close;
+  end;
+end;
+
+function TForm8.HashPassword(const Password: string): string;
+begin
+  Result := UpperCase(THashSHA2.GetHashString(Password));
+end;
+
+procedure TForm8.ButtonSaveClick(Sender: TObject);
+var
+  username, passwordHash: string;
+  role, newUserID: Integer;
+begin
+  username := Trim(Edit1.Text);
+  role := Ord(CheckBox1.Checked); // True = 1 (admin), False = 0 (user)
+
+  if username = '' then
+  begin
+    ShowMessage('Uzupe³nij nazwê u¿ytkownika.');
+    Exit;
+  end;
+
+  if Trim(Edit2.Text) <> '' then
+    passwordHash := HashPassword(Edit2.Text);
+
+  try
+    with DataModule1.FDQueryAddUser do
+    begin
+      SQL.Clear;
+
+      if FIsEditMode then
+      begin
+        if passwordHash <> '' then
+        begin
+          SQL.Text := 'UPDATE Users SET Username = :u, Password = :p, Role = :r WHERE ID = :id';
+          ParamByName('P').AsString := passwordHash;
+        end
+        else
+        begin
+          SQL.Text := 'UPDATE Users SET Username = :u, Role = :r WHERE ID = :id';
+        end;
+
+        ParamByName('ID').AsInteger := FUserID;
+      end
+      else
+      begin
+        SQL.Text := 'INSERT INTO Users (Username, Password, Role) VALUES (:u, :p, :r)';
+        ParamByName('P').AsString := HashPassword(Edit2.Text);
+      end;
+
+      ParamByName('U').AsString := username;
+      ParamByName('R').AsInteger := role;
+      ExecSQL;
+    end;
+
+    // Jeœli dodano nowego u¿ytkownika, dodaj go te¿ do Entities
+    if not FIsEditMode then
+    begin
+      // Pobierz ID nowo dodanego u¿ytkownika
+      with DataModule1.FDQueryGetNewUserID do
+      begin
+        SQL.Text := 'SELECT last_insert_rowid() AS Id';
+        Open;
+        newUserID := FieldByName('Id').AsInteger;
+        Close;
+      end;
+
+      // Dodaj do Entities, jeœli nie istnieje
+      with DataModule1.FDQueryCheckEntity do
+      begin
+        SQL.Text := 'SELECT Id FROM Entities WHERE UserId = :uid';
+        ParamByName('uid').AsInteger := newUserID;
+        Open;
+        if IsEmpty then
+        begin
+          Close;
+          with DataModule1.FDQueryAddEntity do
+          begin
+            SQL.Text := 'INSERT INTO Entities (Name, UserId, ModId, Date, Active) VALUES (:n, :uid, :modid, datetime(''now''), 1)';
+            ParamByName('n').AsString := username;
+            ParamByName('uid').AsInteger := newUserID;
+            ParamByName('modid').AsInteger := newUserID;
+            ExecSQL;
+          end;
+        end
+        else
+          Close;
+      end;
+    end;
+
+    DataModule1.FDQueryUsers.Close;
+    DataModule1.FDQueryUsers.Open;
+
+    ShowMessage('Dane u¿ytkownika zosta³y zapisane.');
+    Close;
+  except
+    on E: Exception do
+      ShowMessage('B³¹d: ' + E.Message);
+  end;
+end;
+
+end.
+

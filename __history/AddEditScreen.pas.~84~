@@ -1,0 +1,395 @@
+﻿unit AddEditScreen;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Vcl.ComCtrls, Vcl.DBCtrls, Vcl.Mask,
+  DataModule, Vcl.ExtDlgs, Data.DB, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage;
+
+type
+  TTransactionMode = (tmLent, tmBorrowed);
+
+  TForm5 = class(TForm)
+    Panel1: TPanel;
+    Panel2: TPanel;
+    LAddEdit: TLabel;
+    LOwner: TLabel;
+    LDescription: TLabel;
+    LAmount: TLabel;
+    LBorrow: TLabel;
+    LReturn: TLabel;
+    LNotes: TLabel;
+    LPhoto: TLabel;
+    LType: TLabel;
+    DTPBorrow: TDateTimePicker;
+    DTPReturn: TDateTimePicker;
+    BSave: TButton;
+    BCancel: TButton;
+    DBLCBType: TDBLookupComboBox;
+    LUser: TLabel;
+    EAmount: TEdit;
+    EDescription: TEdit;
+    OpenPictureDialog1: TOpenPictureDialog;
+    CBOwner: TComboBox;
+    CBUser: TComboBox;
+    RichEdit1: TRichEdit;
+    Label1: TLabel;
+    CheckBox1: TCheckBox;
+    Image1: TImage;
+    BLoadPhoto: TButton;
+    procedure BSaveClick(Sender: TObject);
+    procedure OnCreateForm5(Sender: TObject);
+    procedure BCancelClick(Sender: TObject);
+    procedure OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure BLoadPhotoClick(Sender: TObject);
+  private
+    FTransactionMode: TTransactionMode;
+    FCurrentUserId: Integer;
+    FIsEditing: Boolean;
+    FEditRecordID: Integer;
+    function ValidateInputs: Boolean;
+  public
+    procedure InitForm(Mode: TTransactionMode; CurrentUserId: Integer); overload;
+    procedure InitForm(Mode: TTransactionMode; CurrentUserId: Integer; RecordID: Integer); overload;
+  end;
+
+var
+  Form5: TForm5;
+
+implementation
+
+{$R *.dfm}
+
+function TForm5.ValidateInputs: Boolean;
+var
+  errorMsg: string;
+begin
+  errorMsg := '';
+
+  if (CBOwner.ItemIndex = -1) then
+    errorMsg := errorMsg + '- Please select an owner' + sLineBreak;
+
+  if (CBUser.ItemIndex = -1) then
+    errorMsg := errorMsg + '- Please select a user' + sLineBreak;
+
+  if VarIsNull(DBLCBType.KeyValue) then
+    errorMsg := errorMsg + '- Please select an item type' + sLineBreak;
+
+  if Trim(EDescription.Text) = '' then
+    errorMsg := errorMsg + '- Please enter a description' + sLineBreak;
+
+  try
+    StrToInt(Trim(EAmount.Text));
+  except
+    errorMsg := errorMsg + '- Amount must be a whole number' + sLineBreak;
+  end;
+
+  if errorMsg <> '' then
+  begin
+    ShowMessage('Please correct the following errors:' + sLineBreak + sLineBreak + errorMsg);
+    Result := False;
+  end
+  else
+    Result := True;
+end;
+
+procedure TForm5.OnCreateForm5(Sender: TObject);
+begin
+  CBOwner.Clear;
+  CBUser.Clear;
+
+  with DataModule1.FDQueryEntities do
+  begin
+    Open;
+    First;
+    while not Eof do
+    begin
+      CBOwner.Items.AddObject(FieldByName('Name').AsString, TObject(FieldByName('id').AsInteger));
+      CBUser.Items.AddObject(FieldByName('Name').AsString, TObject(FieldByName('id').AsInteger));
+      Next;
+    end;
+  end;
+
+  CBOwner.Items.Insert(0, 'You');
+  CBOwner.Items.Objects[0] := TObject(-1);
+
+  CBUser.Items.Insert(0, 'You');
+  CBUser.Items.Objects[0] := TObject(-1);
+end;
+
+
+procedure TForm5.OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
+procedure TForm5.InitForm(Mode: TTransactionMode; CurrentUserId: Integer);
+begin
+  FTransactionMode := Mode;
+  FCurrentUserId := CurrentUserId;
+  FIsEditing := False;
+
+  OnCreateForm5(nil);
+
+  case FTransactionMode of
+    tmLent:
+      begin
+        CBOwner.ItemIndex := CBOwner.Items.IndexOf('You');
+        CBOwner.Enabled := False;
+        CBUser.Enabled := True;
+      end;
+
+    tmBorrowed:
+      begin
+        CBUser.ItemIndex := CBUser.Items.IndexOf('You');
+        CBUser.Enabled := False;
+        CBOwner.Enabled := True;
+      end;
+  end;
+
+  LAddEdit.Caption := 'Dodaj pożyczkę';
+  Image1.Picture := nil;
+end;
+
+procedure TForm5.InitForm(Mode: TTransactionMode; CurrentUserId: Integer; RecordID: Integer);
+var
+  ms: TMemoryStream;
+  blobField: TField;
+  png: TPngImage;
+  jpeg: TJPEGImage;
+  ownerID, userID: Integer;
+begin
+  FTransactionMode := Mode;
+  FCurrentUserId := CurrentUserId;
+  FEditRecordID := RecordID;
+  FIsEditing := True;
+
+  OnCreateForm5(nil);
+
+  with DataModule1.FDQuerySingleTransaction do
+  begin
+    Close;
+    ParamByName('id').AsInteger := RecordID;
+    Open;
+
+    EDescription.Text := FieldByName('ItemDescription').AsString;
+    EAmount.Text := FieldByName('Amount').AsString;
+    DTPBorrow.Date := FieldByName('StartDate').AsDateTime;
+    DTPReturn.Date := FieldByName('DueDate').AsDateTime;
+    RichEdit1.Lines.Text := FieldByName('Notes').AsString;
+    DBLCBType.KeyValue := FieldByName('TypeID').AsInteger;
+    CheckBox1.Checked := FieldByName('Returned').AsBoolean;
+
+    ownerID := FieldByName('OwnerUserID').AsInteger;
+    userID := FieldByName('OtherUserID').AsInteger;
+
+    CBOwner.ItemIndex := CBOwner.Items.IndexOfObject(TObject(ownerID));
+    CBUser.ItemIndex := CBUser.Items.IndexOfObject(TObject(userID));
+
+    blobField := FieldByName('Photo');
+    if Assigned(blobField) and (blobField is TBlobField) and (not blobField.IsNull) then
+    begin
+      ms := TMemoryStream.Create;
+      try
+        TBlobField(blobField).SaveToStream(ms);
+        if ms.Size > 0 then
+        begin
+          ms.Position := 0;
+          try
+            png := TPngImage.Create;
+            try
+              png.LoadFromStream(ms);
+              Image1.Picture.Assign(png);
+            finally
+              png.Free;
+            end;
+          except
+            ms.Position := 0;
+            try
+              jpeg := TJPEGImage.Create;
+              try
+                jpeg.LoadFromStream(ms);
+                Image1.Picture.Assign(jpeg);
+              finally
+                jpeg.Free;
+              end;
+            except
+              on E: Exception do
+              begin
+                Image1.Picture := nil;
+                ShowMessage('Nie udało się wczytać zdjęcia: ' + E.Message);
+              end;
+            end;
+          end;
+        end
+        else
+          Image1.Picture := nil;
+      finally
+        ms.Free;
+      end;
+    end
+    else
+      Image1.Picture := nil;
+  end;
+
+  if Mode = tmLent then
+  begin
+    CBOwner.Enabled := False;
+    CBOwner.ItemIndex := CBOwner.Items.IndexOf('You')
+  end
+  else
+  begin
+    CBUser.Enabled := False;
+    CBUser.ItemIndex := CBOwner.Items.IndexOf('You');
+  end;
+
+
+  LAddEdit.Caption := 'Dodaj pożyczkę';
+end;
+
+procedure TForm5.BCancelClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TForm5.BLoadPhotoClick(Sender: TObject);
+begin
+  if OpenPictureDialog1.Execute then
+    Image1.Picture.LoadFromFile(OpenPictureDialog1.FileName);
+end;
+
+function GetEntityIdForUser(UserId: Integer): Integer;
+begin
+  with DataModule1.FDQuerySearch do
+  begin
+    SQL.Text := 'SELECT Id FROM Entities WHERE UserId = :uid';
+    ParamByName('uid').AsInteger := UserId;
+    Open;
+    if not IsEmpty then
+      Result := FieldByName('Id').AsInteger
+    else
+      raise Exception.Create('Brak encji powiązanej z użytkownikiem.');
+    Close;
+  end;
+end;
+
+procedure TForm5.BSaveClick(Sender: TObject);
+var
+  ms: TMemoryStream;
+  ownerID, userID: Integer;
+  createdByEntityID: Integer;
+begin
+  if not ValidateInputs then
+    Exit;
+
+  createdByEntityID := GetEntityIdForUser(FCurrentUserId);
+
+  if CBOwner.Text = 'You' then
+    ownerID := GetEntityIdForUser(FCurrentUserId)
+  else
+    ownerID := Integer(CBOwner.Items.Objects[CBOwner.ItemIndex]);
+
+  if CBUser.Text = 'You' then
+    userID := GetEntityIdForUser(FCurrentUserId)
+  else
+    userID := Integer(CBUser.Items.Objects[CBUser.ItemIndex]);
+
+
+  if CBUser.Text = 'You' then
+  begin
+    with DataModule1.FDQuerySearch do
+    begin
+      Close;
+      SQL.Text := 'SELECT Id FROM Entities WHERE UserId = :uid LIMIT 1';
+      ParamByName('uid').AsInteger := FCurrentUserId;
+      Open;
+
+      if not IsEmpty then
+        userID := FieldByName('Id').AsInteger
+      else
+        raise Exception.Create('Nie znaleziono encji powiązanej z zalogowanym użytkownikiem (User).');
+    end;
+  end
+  else
+    userID := Integer(CBUser.Items.Objects[CBUser.ItemIndex]);
+
+  ShowMessage('OwnerID: ' + IntToStr(ownerID));
+  ShowMessage('UserID: ' + IntToStr(userID));
+
+  ms := TMemoryStream.Create;
+  try
+    try
+      if Assigned(Image1.Picture.Graphic) and (not Image1.Picture.Graphic.Empty) then
+      begin
+        Image1.Picture.Graphic.SaveToStream(ms);
+        ms.Position := 0;
+      end;
+    except
+      on E: Exception do
+      begin
+        ms.Clear;
+        ShowMessage('Error while saving a photo: ' + E.Message);
+      end;
+    end;
+
+    if FIsEditing then
+    begin
+      with DataModule1.FDQueryUpdateTRansaction do
+      begin
+        ParamByName('id').AsInteger := FEditRecordID;
+        ParamByName('OwnerUserID').AsInteger := ownerID;
+        ParamByName('OtherUserID').AsInteger := userID;
+        ParamByName('TypeID').AsInteger := DBLCBType.KeyValue;
+        ParamByName('ItemDescription').AsString := EDescription.Text;
+        ParamByName('Amount').AsFloat := StrToFloat(EAmount.Text);
+        ParamByName('StartDate').AsDate := DTPBorrow.Date;
+        ParamByName('DueDate').AsDate := DTPReturn.Date;
+        ParamByName('Returned').AsBoolean := CheckBox1.Checked;
+        ParamByName('Notes').AsString := RichEdit1.Lines.Text;
+
+        if ms.Size > 0 then
+          ParamByName('Photo').LoadFromStream(ms, ftBlob)
+        else
+          ParamByName('Photo').Clear;
+
+        ExecSQL;
+      end;
+    end
+    else
+    begin
+      with DataModule1.FDQueryAddTransaction do
+      begin
+        ParamByName('OwnerUserID').AsInteger := ownerID;
+        ParamByName('OtherUserID').AsInteger := userID;
+        ParamByName('TypeID').AsInteger := DBLCBType.KeyValue;
+        ParamByName('ItemDescription').AsString := EDescription.Text;
+        ParamByName('Amount').AsFloat := StrToFloat(EAmount.Text);
+        ParamByName('StartDate').AsDate := DTPBorrow.Date;
+        ParamByName('DueDate').AsDate := DTPReturn.Date;
+        ParamByName('Returned').AsBoolean := CheckBox1.Checked;
+        ParamByName('Notes').AsString := RichEdit1.Lines.Text;
+
+        if ms.Size > 0 then
+          ParamByName('Photo').LoadFromStream(ms, ftBlob)
+        else
+          ParamByName('Photo').Clear;
+
+        ParamByName('CreatedByUserID').AsInteger := createdByEntityID;
+
+        ExecSQL;
+      end;
+    end;
+
+    ModalResult := mrOk;
+  finally
+    ms.Free;
+  end;
+end;
+
+
+
+end.
+

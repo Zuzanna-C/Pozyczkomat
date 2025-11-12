@@ -1,0 +1,636 @@
+unit MainScreen;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids, UserSettings,
+  DataModule, DetailsScreen, SettingsScreen, Vcl.Imaging.pngimage, Vcl.ComCtrls,
+  Vcl.DBCtrls, Vcl.Buttons, AddEditScreen, Vcl.Menus;
+
+type
+  TForm2 = class(TForm)
+    Panel1: TPanel;
+    LWitaj: TLabel;
+    Image1: TImage;
+    Image2: TImage;
+    TabControl: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    Panel3: TPanel;
+    DBGridL: TDBGrid;
+    Panel4: TPanel;
+    DBGridB: TDBGrid;
+    Image3: TImage;
+    TabSheet3: TTabSheet;
+    Panel2: TPanel;
+    DBGridRA: TDBGrid;
+    LUser: TLabel;
+    DBLCBEntities: TDBLookupComboBox;
+    DBLCBTypes: TDBLookupComboBox;
+    Label1: TLabel;
+    Label4: TLabel;
+    CheckBoxReturned: TCheckBox;
+    BClear: TButton;
+    DBNavigatorB: TDBNavigator;
+    BAddB: TButton;
+    BEditB: TButton;
+    BRemoveB: TButton;
+    DBNavigatorL: TDBNavigator;
+    BAddL: TButton;
+    BEditL: TButton;
+    BRemoveL: TButton;
+    DBNavigator2: TDBNavigator;
+    PopupGridMenu: TPopupMenu;
+    hhhhh1: TMenuItem;
+    Remove1: TMenuItem;
+    procedure BCloseClick(Sender: TObject);
+    procedure BDetBorrClick(Sender: TObject);
+    procedure BDetLoansClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure OnDrawColumnCellLoans(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure OnDrawColumnCellBorrowed(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure Image1Click(Sender: TObject);
+    procedure Image2Click(Sender: TObject);
+    procedure Image3Click(Sender: TObject);
+    procedure OnCreate(Sender: TObject);
+    procedure OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure BAddLClick(Sender: TObject);
+    procedure BEditLClick(Sender: TObject);
+    procedure BRemoveLClick(Sender: TObject);
+    procedure BAddBClick(Sender: TObject);
+    procedure BEditBClick(Sender: TObject);
+    procedure BRemoveBClick(Sender: TObject);
+    procedure BClearClick(Sender: TObject);
+    procedure OnChange(Sender: TObject);
+    procedure OnDblClickB(Sender: TObject);
+    procedure OnDblCkickL(Sender: TObject);
+    procedure OnClickEditPopUp(Sender: TObject);
+    procedure OnClickRemovePopUp(Sender: TObject);
+    procedure OnCloseUpE(Sender: TObject);
+    procedure OnCloseUpT(Sender: TObject);
+    procedure OnClickReturned(Sender: TObject);
+    procedure OnDblCkickRA(Sender: TObject);
+  private
+    procedure AddRecord(const DetailsType: string);
+    procedure EditRecord(const DetailsType: string; DataSet: TDataSet);
+    procedure RemoveRecord(const DetailsType: string; DataSet: TDataSet);
+    procedure ApplyFilter(DataSet: TDataSet);
+    procedure ClearFilter(const DetailsType: string);
+    procedure UpdateFilter;
+    procedure RefreshSettings;
+  public
+    procedure LoadUserData(_UserID: Integer; const Username: string);
+  end;
+
+var
+  Form2: TForm2;
+  userID: Integer;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm2.AddRecord(const DetailsType: string);
+var
+  mode: TTransactionMode;
+begin
+  if SameText(DetailsType, 'Loans') then
+    mode := tmLent
+  else if SameText(DetailsType, 'Borrowed') then
+    mode := tmBorrowed
+  else
+    Exit;
+
+  with TForm5.Create(Self) do
+  try
+    InitForm(mode, userID);
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
+procedure TForm2.EditRecord(const DetailsType: string; DataSet: TDataSet);
+var
+  mode: TTransactionMode;
+  recordID: Integer;
+  direction: string;
+  currentEntityId: Integer;
+begin
+  if (DataSet = nil) or DataSet.IsEmpty then
+    Exit;
+
+  recordID := DataSet.FieldByName('id').AsInteger;
+
+  currentEntityId := DataModule1.FDQueryEntities.Lookup('UserId', userID, 'Id');
+
+  if DataSet.FieldByName('CreatedByUserID').AsInteger <> currentEntityId then
+  begin
+    ShowMessage('Nie masz uprawnieñ do edycji tego rekordu, poniewa¿ zosta³ on utworzony przez innego u¿ytkownika.');
+    Exit;
+  end;
+
+  if SameText(DetailsType, 'Loans') then
+    mode := tmLent
+  else if SameText(DetailsType, 'Borrowed') then
+    mode := tmBorrowed
+  else if SameText(DetailsType,'RA') then
+  begin
+    direction := DataSet.FieldByName('TransactionRole').AsString;
+
+    if SameText(direction, 'po¿yczone komuœ') then
+      mode := tmLent
+    else if SameText(direction, 'po¿yczone mnie') then
+      mode := tmBorrowed
+    else
+      Exit;
+  end
+  else
+    Exit;
+
+  with TForm5.Create(Self) do
+  try
+    InitForm(mode, userID, recordID);
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
+procedure TForm2.RemoveRecord(const DetailsType: string; DataSet: TDataSet);
+var
+  recordID: Integer;
+begin
+  if (DataSet = nil) or DataSet.IsEmpty then
+    Exit;
+
+  recordID := DataSet.FieldByName('id').AsInteger;
+
+  if MessageDlg('Delete this record?', mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    Exit;
+
+  if SameText(DetailsType, 'Loans') then
+  begin
+    DataModule1.FDQueryLoans.DisableControls;
+    try
+      DataModule1.FDQueryLoans.Close;
+      // uniwersalny delete z Transactions (po id)
+      DataModule1.FDQueryDeleteLoan.ParamByName('id').AsInteger := recordID;
+      DataModule1.FDQueryDeleteLoan.ExecSQL;
+      DataModule1.FDQueryLoans.ParamByName('uid').AsInteger := userID;
+      DataModule1.FDQueryLoans.Open;
+    finally
+      DataModule1.FDQueryLoans.EnableControls;
+    end;
+  end
+  else if SameText(DetailsType, 'Borrowed') then
+  begin
+    DataModule1.FDQueryBorrowed.DisableControls;
+    try
+      DataModule1.FDQueryBorrowed.Close;
+      // jeœli to te¿ jest uniwersalny DELETE, mo¿esz u¿yæ FDQueryDeleteLoan zamiast tego
+      DataModule1.FDQueryDeleteBorrowing.ParamByName('id').AsInteger := recordID;
+      DataModule1.FDQueryDeleteBorrowing.ExecSQL;
+      DataModule1.FDQueryBorrowed.ParamByName('uid').AsInteger := userID;
+      DataModule1.FDQueryBorrowed.Open;
+    finally
+      DataModule1.FDQueryBorrowed.EnableControls;
+    end;
+  end
+  else if SameText(DetailsType, 'RA') then
+  begin
+    DataModule1.FDQueryAllTransactions.DisableControls;
+    try
+      DataModule1.FDQueryAllTransactions.Close;
+      DataModule1.FDQueryDeleteLoan.ParamByName('id').AsInteger := recordID;
+      DataModule1.FDQueryDeleteLoan.ExecSQL;
+      DataModule1.FDQueryAllTransactions.ParamByName('uid').AsInteger := userID;
+      DataModule1.FDQueryAllTransactions.Open;
+    finally
+      DataModule1.FDQueryAllTransactions.EnableControls;
+    end;
+  end;
+end;
+
+
+
+
+procedure TForm2.ClearFilter(const DetailsType: string);
+begin
+  CheckBoxReturned.Checked := False;
+
+  if SameText(DetailsType, 'Loans') then
+  begin
+    with DataModule1.FDQueryLoans do
+    begin
+      Filtered := False;
+      Close;
+      ParamByName('uid').AsInteger := userID;
+      Open;
+    end;
+  end
+  else
+  begin
+    with DataModule1.FDQueryBorrowed do
+    begin
+      Filtered := False;
+      Close;
+      ParamByName('uid').AsInteger := userID;
+      Open;
+    end;
+  end;
+end;
+
+procedure TForm2.BAddLClick(Sender: TObject);
+begin
+  AddRecord('Loans');
+end;
+
+procedure TForm2.BEditLClick(Sender: TObject);
+begin
+  EditRecord('Loans', DataModule1.FDQueryLoans);
+end;
+
+procedure TForm2.BRemoveLClick(Sender: TObject);
+begin
+  RemoveRecord('Loans', DataModule1.FDQueryLoans);
+end;
+
+procedure TForm2.BAddBClick(Sender: TObject);
+begin
+  AddRecord('Borrowed');
+end;
+
+procedure TForm2.BEditBClick(Sender: TObject);
+begin
+  EditRecord('Borrowed', DataModule1.FDQueryBorrowed);
+end;
+
+procedure TForm2.BRemoveBClick(Sender: TObject);
+begin
+  RemoveRecord('Borrowed', DataModule1.FDQueryBorrowed);
+end;
+
+procedure TForm2.BClearClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to ComponentCount - 1 do
+  begin
+    if Components[i] is TComboBox then
+    begin
+      TComboBox(Components[i]).ItemIndex := -1;
+    end
+    else if Components[i] is TCheckBox then
+      TCheckBox(Components[i]).Checked := False
+    else if Components[i] is TEdit then
+      TEdit(Components[i]).Clear;
+  end;
+
+  DataModule1.FDQueryLoans.Filtered := False;
+  DataModule1.FDQueryBorrowed.Filtered := False;
+
+  DBGridL.Repaint;
+  DBGridB.Repaint;
+
+  DBLCBEntities.KeyValue := Null;
+  DBLCBTypes.KeyValue := Null;
+end;
+
+procedure TForm2.BCloseClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TForm2.BDetLoansClick(Sender: TObject);
+begin
+  Form4 := TForm4.Create(Self);
+  try
+    Form4.InitializeDetailsScreen('Loans', userID);
+    Form4.ShowModal;
+  finally
+    Form4.Free;
+  end;
+end;
+
+procedure TForm2.BDetBorrClick(Sender: TObject);
+begin
+  Form4 := TForm4.Create(Self);
+  try
+    Form4.InitializeDetailsScreen('Borrowed', userID);
+    Form4.ShowModal;
+  finally
+    Form4.Free;
+  end;
+end;
+
+procedure TForm2.Button1Click(Sender: TObject);
+begin
+  Form6 := TForm6.Create(Self);
+  try
+    Form6.UserID := userID;
+    if Form6.ShowModal = mrOk then
+      RefreshSettings;
+  finally
+    Form6.Free;
+  end;
+end;
+
+procedure TForm2.Image1Click(Sender: TObject);
+begin
+  Form6 := TForm6.Create(Self);
+  try
+    Form6.UserID := userID;
+    Form6.ShowModal;
+    RefreshSettings;
+  finally
+    Form6.Free;
+  end;
+end;
+
+procedure TForm2.Image2Click(Sender: TObject);
+begin
+  Form7 := TForm7.Create(Self);
+  try
+    Form7.UserID := userID;
+    Form7.ShowModal;
+  finally
+    Form7.Free;
+  end;
+end;
+
+procedure TForm2.Image3Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TForm2.LoadUserData(_UserID: Integer; const Username: string);
+begin
+  LWitaj.Caption := 'Witaj ' + Username + '!';
+  userID := _UserID;
+
+  with DataModule1.FDQueryLoans do
+  begin
+    Close;
+    ParamByName('uid').AsInteger := _UserID;
+    Open;
+  end;
+
+  with DataModule1.FDQueryBorrowed do
+  begin
+    Close;
+    ParamByName('uid').AsInteger := _UserID;
+    Open;
+  end;
+
+  with DataModule1.FDQueryAllTransactions do
+  begin
+    Close;
+    ParamByName('uid').AsInteger := _UserID;
+    Open;
+  end;
+end;
+
+function IsDarkColor(Color: TColor): Boolean;
+var
+  R, G, B: Byte;
+begin
+  Color := ColorToRGB(Color);
+  R := GetRValue(Color);
+  G := GetGValue(Color);
+  B := GetBValue(Color);
+  Result := (R * 0.299 + G * 0.587 + B * 0.114) < 128;
+end;
+
+procedure TForm2.OnChange(Sender: TObject);
+begin
+  if TabControl.ActivePage = TabSheet1 then
+    DBGridL.SetFocus
+  else if TabControl.ActivePage = TabSheet2 then
+    DBGridB.SetFocus
+  else if TabControl.ActivePage = TabSheet3 then
+    DBGridRA.SetFocus;
+end;
+
+procedure TForm2.OnClickEditPopUp(Sender: TObject);
+begin
+  if ActiveControl = DBGridL then
+    EditRecord('Loans', DataModule1.FDQueryLoans)
+  else if ActiveControl = DBGridB then
+    EditRecord('Borrowed', DataModule1.FDQueryBorrowed)
+  else if ActiveControl = DBGridRA then
+    EditRecord('RA', DataModule1.FDQueryAllTransactions);
+end;
+
+
+procedure TForm2.OnClickRemovePopUp(Sender: TObject);
+begin
+  if ActiveControl = DBGridL then
+    RemoveRecord('Loans', DataModule1.FDQueryLoans)
+  else if ActiveControl = DBGridB then
+    RemoveRecord('Borrowed', DataModule1.FDQueryBorrowed)
+  else if ActiveControl = DBGridRA then
+    RemoveRecord('RA', DataModule1.FDQueryAllTransactions);
+end;
+
+procedure TForm2.OnClickReturned(Sender: TObject);
+begin
+  UpdateFilter;
+end;
+
+procedure TForm2.UpdateFilter;
+var
+  ds: TDataSet;
+begin
+  if TabControl.ActivePage = TabSheet1 then
+    ds := DataModule1.FDQueryLoans
+  else if TabControl.ActivePage = TabSheet2 then
+    ds := DataModule1.FDQueryBorrowed
+  else if TabControl.ActivePage = TabSheet3 then
+    ds := DataModule1.FDQueryAllTransactions
+  else
+    Exit;
+
+  ApplyFilter(ds);
+end;
+
+procedure TForm2.ApplyFilter(DataSet: TDataSet);
+var
+  filterText: string;
+begin
+  filterText := '';
+
+  if not VarIsNull(DBLCBEntities.KeyValue) then
+    filterText := 'OtherUserID = ' + IntToStr(Integer(DBLCBEntities.KeyValue));
+
+  if not VarIsNull(DBLCBTypes.KeyValue) then
+  begin
+    if filterText <> '' then
+      filterText := filterText + ' AND ';
+    filterText := filterText + 'TypeID = ' + IntToStr(Integer(DBLCBTypes.KeyValue));
+  end;
+
+  if CheckBoxReturned.Checked then
+  begin
+    if filterText <> '' then
+      filterText := filterText + ' AND ';
+    filterText := filterText + 'Returned = 1';
+    CheckBoxReturned.Caption := 'Tak';
+  end
+  else
+  begin
+    CheckBoxReturned.Caption := 'Nie';
+  end;
+
+  DataSet.Filter := filterText;
+  DataSet.Filtered := filterText <> '';
+end;
+
+
+
+procedure TForm2.OnCloseUpE(Sender: TObject);
+begin
+  UpdateFilter;
+end;
+
+procedure TForm2.OnCloseUpT(Sender: TObject);
+begin
+  UpdateFilter;
+end;
+
+procedure TForm2.OnCreate(Sender: TObject);
+begin
+  TabControl.ActivePageIndex := 0;
+  DataModule1.FDQueryTypes.Active := true;
+  DataModule1.FDQueryEntities.Active := True;
+end;
+
+procedure TForm2.OnKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    Close;
+end;
+
+procedure TForm2.OnDblCkickL(Sender: TObject);
+begin
+  EditRecord('Loans', DataModule1.FDQueryLoans);
+end;
+
+procedure TForm2.OnDblCkickRA(Sender: TObject);
+begin
+  EditRecord('RA', DataModule1.FDQueryAllTransactions);
+end;
+
+procedure TForm2.OnDblClickB(Sender: TObject);
+begin
+  EditRecord('Borrowed', DataModule1.FDQueryBorrowed);
+end;
+
+procedure TForm2.OnDrawColumnCellLoans(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  DueDate: TDateTime;
+  Text: string;
+  TextWidth, TextHeight, X, Y: Integer;
+begin
+  if DataModule1.FDQueryLoans.IsEmpty then
+  begin
+    DBGridL.Canvas.Brush.Color := clWindow;
+    DBGridL.Canvas.FillRect(Rect);
+    Exit;
+  end;
+
+  if Column.FieldName = 'DueDate' then
+  begin
+    try
+      if not Column.Field.IsNull then
+      begin
+        DueDate := Column.Field.AsDateTime;
+
+        if (DueDate < Date) and HighlightLent then
+        begin
+          DBGridL.Canvas.Brush.Color := LentColor;
+
+          if IsDarkColor(LentColor) then
+            DBGridL.Canvas.Font.Color := clWhite
+          else
+            DBGridL.Canvas.Font.Color := clBlack;
+
+          DBGridL.Canvas.FillRect(Rect);
+
+          Text := Column.Field.DisplayText;
+          TextWidth := DBGridL.Canvas.TextWidth(Text);
+          TextHeight := DBGridL.Canvas.TextHeight(Text);
+
+          X := Rect.Left + (Rect.Right - Rect.Left - TextWidth) div 2;
+          Y := Rect.Top + (Rect.Bottom - Rect.Top - TextHeight) div 2;
+
+          DBGridL.Canvas.TextOut(X, Y, Text);
+        end;
+      end;
+    except
+      DBGridL.Canvas.Brush.Color := clWindow;
+      DBGridL.Canvas.FillRect(Rect);
+    end;
+  end;
+end;
+
+procedure TForm2.OnDrawColumnCellBorrowed(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  DueDate: TDateTime;
+  Text: string;
+  TextWidth, TextHeight, X, Y: Integer;
+begin
+  if DataModule1.FDQueryBorrowed.IsEmpty then
+  begin
+    DBGridB.Canvas.Brush.Color := clWindow;
+    DBGridB.Canvas.FillRect(Rect);
+    Exit;
+  end;
+
+  if Column.FieldName = 'DueDate' then
+  begin
+    try
+      DueDate := Column.Field.AsDateTime;
+      if DueDate < Date then
+      begin
+        if HighlightBorrowed then
+        begin
+          DBGridB.Canvas.Brush.Color := BorrowedColor;
+
+          if IsDarkColor(BorrowedColor) then
+            DBGridB.Canvas.Font.Color := clWhite
+          else
+            DBGridB.Canvas.Font.Color := clBlack;
+
+          DBGridB.Canvas.FillRect(Rect);
+
+          Text := Column.Field.DisplayText;
+          TextWidth := DBGridB.Canvas.TextWidth(Text);
+          TextHeight := DBGridB.Canvas.TextHeight(Text);
+
+          X := Rect.Left + (Rect.Right - Rect.Left - TextWidth) div 2;
+          Y := Rect.Top + (Rect.Bottom - Rect.Top - TextHeight) div 2;
+
+          DBGridB.Canvas.TextOut(X, Y, Text);
+        end;
+      end;
+    except
+    end;
+  end;
+end;
+
+
+procedure TForm2.RefreshSettings;
+begin
+  DBGridL.Repaint;
+  DBGridB.Repaint;
+end;
+
+end.
+

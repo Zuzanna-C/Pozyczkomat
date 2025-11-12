@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Settings>
+  <HighlightLent>true</HighlightLent>
+  <HighlightBorrowed>true</HighlightBorrowed>
+  <LentColor>clRed</LentColor>
+  <BorrowedColor>clBlue</BorrowedColor>
+</Settings>

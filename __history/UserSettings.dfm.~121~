@@ -1,0 +1,574 @@
+object Form7: TForm7
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu, biMinimize]
+  ClientHeight = 272
+  ClientWidth = 357
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Position = poDesktopCenter
+  OnCreate = OnCreate
+  OnShow = OnShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = -8
+    Top = 0
+    Width = 377
+    Height = 281
+    Color = clWhite
+    ParentBackground = False
+    TabOrder = 0
+    object LUserSett: TLabel
+      Left = 87
+      Top = 14
+      Width = 208
+      Height = 28
+      Caption = 'Ustawienia u'#380'ytkownika'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5258796
+      Font.Height = -20
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object PageControl1: TPageControl
+      Left = 16
+      Top = 56
+      Width = 340
+      Height = 209
+      ActivePage = TabSheet3
+      TabOrder = 0
+      object TabSheet1: TTabSheet
+        Caption = 'Dane u'#380'ytkownika'
+        object Panel2: TPanel
+          Left = -4
+          Top = -2
+          Width = 338
+          Height = 187
+          Color = clWhite
+          ParentBackground = False
+          TabOrder = 0
+          object LUser: TLabel
+            Left = 16
+            Top = 67
+            Width = 38
+            Height = 15
+            Caption = 'Nazwa:'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = 5258796
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label2: TLabel
+            Left = 16
+            Top = 115
+            Width = 33
+            Height = 15
+            Caption = 'Has'#322'o:'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = 5258796
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Image1: TImage
+            Left = 151
+            Top = 13
+            Width = 45
+            Height = 39
+            Picture.Data = {
+              0954506E67496D61676589504E470D0A1A0A0000000D49484452000000ED0000
+              00D50806000000BB64774F000014724944415478DAED9D4F685DD5F3C08F0B51
+              17D28A4191A4A10BA5D080880BC19082BAB260280137010945444C57D5457706
+              8948A18BD2526CC18D4584E22A8B2C5A11EAC2360B3782FA94525D18D3823552
+              41F10F82F77BE799F7F525BE77DF993973CE9939773E9BDFF7FBFBA6F79D993B
+              73CF397366E6DCE10CC350C51DB9076018060E735AC3508639AD6128C39CD630
+              94614E6B18CA30A7350C6598D31A8632CC690D4319E6B486A10C735AC3508639
+              AD522E5CB850FDF9E79FEEE79F7F763FFDF493FBE5975F1CFC77E0F7DF7F77F7
+              DC734FF73FDF75D75DDDFF7BEFBDF7BA3BEFBCD3DD7DF7DDEE81071EE8FEFFE7
+              E7E7EDFD2BC45E9A40CE9F3F5FDDBA75CB7DF9E597EE9B6FBE715F7FFDB5BB7D
+              FB76F4DFBDEFBEFBDC9E3D7BDCD4D4947BF8E187DD238F3CE2161616CC468461
+              2F2433AFBFFE7A75F5EA5577F9F2E5DC4319C9C18307DD934F3ED975669BA5F3
+              618A4FC8D9B367AB8F3EFAC8ADACACE41E0A1BB3B3B3EEC08103EED8B163664B
+              89304547049CF4E2C58B6E757535F75092313737E70E1D3AE40E1F3E6CB61509
+              532C33B0DC3D77EE9CDBDCDCCC3D94EC8C8F8FBB175F7CD1BDF9E69B66678C98
+              3219585C5CEC3AAAD1CCD1A347DDA953A7CCE602310512595E5EAE969696720F
+              432DF58AC4666022A634047036FAF6DB6FBB2B57AEE41E4A314C4F4FBB975F7E
+              D9F6C0084C511EC03EB59E15720FA3786CF6F5C314D4C0DCDC5C55D2F18C16E6
+              E7E7615563B6390453CC00EA255BB5B6B6967B188DECDBB7CFDD7FFFFD6ED7AE
+              5DEEC1071F74BB77EFDE96AAF8C71F7FB8BFFEFAABFBB7BD14474879FCF5D75F
+              BBD9553FFEF8A3BB76ED5A6E311A81A573FD1ECC4677600AE9E3D1471FAD3EFF
+              FCF3DCC3E8323636E69E7BEE39B77FFFFE6E6A618A0C24489FFCF6DB6FBBA993
+              900422E5D8CA9C773BA60897DF59C1289F78E209F7F8E38F8BCDF5857DFDC71F
+              7F9C350867CEFB0FAD56C0C18307BB194BA979E69967DCF3CF3FEF8E1C39A256
+              FF274E9CA82E5DBA9425671A5227575757D5EA2E94560A7EF4E8D1EAD4A953C9
+              7E0F96BA8B8B8B45474661267EF7DD77DDC6C646B2DF049D9E3B77AE589D0EA3
+              5502C39EEDF0E1C3497E6B7272D2BDF4D24B6E6969A9553A06EA0F6237432C55
+              A0EBECD9B3AA572D585A2368AA7DAB9D356E27D51977FD7E5DFD7E5BA1F7E285
+              4C613450D9B2B2B252BC2E43999F9FAF2E5CB810F537DAF0D12C5AB8F1F1F1EA
+              C68D1BD19EBFBCBCDCCAE56F2810C43A76EC58B4E7430C617373B3D8F752A460
+              3193F921A9E18D37DEB0CE0D0C408CE1F8F1E3D1F6BEA5CEBAC509146BEF0A7D
+              933A9D4E71FA92001462C0873086F396F8DE8A11265664B84D010E09C4FAE8C2
+              5EBA94D5511142C4387785CE84B76FDF2E423FDA8099F7C89123EC1D28E1A35E
+              7FDCD5BF53F502D47BCC8A7B59D5B6733FA9C0792F74BBE0046212B5BDA87EB7
+              AA075F53713EACAD1936D289D4CE47ED7B563970EEFDABED5B75C0BDDFD5BAA2
+              523760EEFD2B3CAB7EA63A3DB415684B0BFB5D2E341E0BA91A2C672709A8B4B9
+              7CF9B22AF98D7F999999A9B8CA04B575CA503350CE6E1236BB9601E73649D316
+              49C520B922C45079B3BEBEAE4266C39FB6D987F8018E8D8D551C6D4F2C325C36
+              5CB10E0DE7F3A207E7988E74DE7BEF3DB16D5C42814484EFBFFFDEDDBC79D3FD
+              F0C30FDDE66DBD7B6AE10E5A68F206CDDFA0CF14348283067085F718E63A0614
+              AB23B103730CCAD7B2DCF105AA633EF9E413D60BBD2020F7D4534F1555AD54CF
+              9615533695489D881C946370D812A2C31068F9E0830F5CCA3E5670072DF460D2
+              787EB9430EAEFE5FE2F4206E401C35B09A2F7AAA97F2D53BEFBC23E2EA11ED1F
+              3E8E0608126B73450D86230AA8F5382775B3392C1A9310008E640C69F9CA6206
+              527FD5ABD0769C1ACBAF1616162A0894694171143E68CB35333303AB1F11728B
+              180453EF2011B2F8A2FD4E5BA5656E418E5B7F6061FB925DE6EC03606ABC965D
+              0E5F62F7474A8DC23E59418E5BBF3F57BFBFACF266FD71386384BC4FCD326060
+              3C8A1085C2A3B520C7AD571859CFBA732B3AF46827F7F8BD68CBFDB6CAA2F66A
+              6D2FA782D52A0D43EC36AED2A8E575B5BC2ADE8D536A83597E9421522CDE2898
+              96FE6AC9BD84444076DC5C11E5E43FC8B054146F0829AFC28016A170A9F4DEBD
+              7BBB79C5906FBCF3D80B3E20B09786C28BCF3EFBCC7DF5D55749EED951B45C26
+              3B6E8EF3EB1C0A0D5992883780D9D9D98A3337B81F98B90F1C38C09A62080EFD
+              E1871F7667C61828BA32458D5DA6562659311A1227380BF57BA4FE92C7C8CC52
+              5460AEC27193FD504802B784B3B151D4CBD4AAD3E9B03C4B4ACE2F47965A0F69
+              A980830869D99AF29D25F99190B6201AD2E6262727ABF5F5F5E0E748ED55C495
+              6A39313101974E8B93AF9F909546AAEE8EA914485A76D4CB4D572F3745BF648E
+              B69E5266568F7106CFBC1A96CA8172EA77DAC0AE79A25F2E47CDA6D2AE1AC524
+              DF73CB9862A289FAF0C0B228D12F3534E15FEA52D897D025B3866D8F233A6EEC
+              33EAD84A23092DBDF37B688DA674F97C81827DA87CA122BDF639B045AB3EA7A5
+              96DB299981541C0D24A4587D50571431CFA7632A0CFD2235B4AFA4C80528CBC9
+              A5C81792632D5A2F01D5597A9C36E00844F4CBA3AE1E4ABC8D7C10D4F7AE246B
+              0AFDB18E55B2C8FE40EA7E4F490F22312F4E2A54C7959EF146CD278F11BF88A1
+              24B4612B9989A8FB36E972C5A0485D05341E94EBB401D924A25F56C0F18E68B9
+              2283765C257DA7D07271AF22B91584164849F9165A2EE9CBBD4450665CD13A0B
+              28BB94E7B4F557B2C296776988165332BA94240E4487B2F2D290BA4A892673DA
+              04A7728AFBAA52E42AFD68070B3130A5417FD9EC9DE521943D9F86303FB11840
+              B44C994019B886A2024ADE39D76CCBA5189B659D9A404A7288813C0D7ACC62F7
+              C10FA0EC5B349CC912CBB344CB94199481C3ED7DF54C265A9FB96C9F432936CB
+              3A1D1FA29C2C2F2F574B4B4BD87FA6419FC9ED3FE81F535E84860A17E279B368
+              998450DC879072CD4B687553A8426C96756ACE9AB3433CE3D4A0D7A47E90D469
+              0B6E60AD41262914A75B4A43B8908E256485941AA8C1463AB5F4779202365945
+              51441EF5310A69B913A20CD42035EC65297239051F224910BB5D88D731F10AD3
+              744E5BF0DE0430A78D4FA93A4E120BA12AA3B8282080FD5ACECECEBAD5D555F1
+              7249039B4D24BD97548F54A70E499C36E0779282DDA72B5AF28B02DB284143A2
+              451FD17D03FD0FB02D5734E418F751E4C7482845EA1AEB1F94401B4511452ABB
+              05B249A3645D47950DF5C7C48B928B54B6922EF962C15650296B2A80725AAC6C
+              282560A77E0DB7DDF58D151584B22CA830B0E7E1CBCBCB6E69694985BEB17B76
+              EC1612AB846297345823527A078F18B059448A922C7A44F395684EAB2CE247B9
+              105A8D6C82F1B6270D6D68FA21640CF23B2D762652B607018A5D4508A6589D63
+              33BF30DB2D6F25109A59A951F016C51A90604AD7B9B77C982687182514BB34C6
+              CAB78536F92452B4CEE7E6E6AA95951576F9BCFE081B34505482D74FD1062494
+              A2758E3D22F5F51B2F25103ACFA952EE16451B9050DAA0736F197D8F7E7C9550
+              6C948F22E3161A659446F13A27B4E14DEFB49A122AA8326EA151466914AF7342
+              1FB570A725142DAB53EC16C51B9040DAA2736F397D2AC7462A8170474FF18A55
+              2EA724DAA2736F396182AC27CA30A7C5DCC5A2B9289C70F7A84A3985E16DCC9A
+              2FE7C66447F9C8E9A38436EC67D1676A0A33BE44813D0E515697BD0D42FFA874
+              4EEBF93C91605B856869A12315AC2117A06F363F6AFC1F09FD5CD52A35763995
+              B11D6C9967015555DE4E3B2AC9A25109982201CD7B8E3EDA12189140AB748D89
+              0D8D2A1E6854C4D4D454D5E974BC7E4861BDE3205A6548996995AE3113E0A8FB
+              794729A21541A81E16414E03360855BF1757BF17D5BAC66EBF5C836DB139ADC7
+              B3C4830D4659CB191A583D73DDA02E00167F32A70D9019530369FCCBD8D858B5
+              B9B9E9FDF7051DAF99D346A2557BAD4CB455C7DE723745CB872A03B3061FB571
+              D604B62AC396C838B0F74029AE1AFB0F98C06E538C68A83230FB0E082AD44B98
+              22149BF2F6B39652EA6D8B23C164DD35EDE3872A0373F85D40B6CA4E508655C0
+              C17F125AD0ECBE11CC44D894C73F54219865A2965BCD7CC176EA2869091713EC
+              D6A3B40BBBCF9F3F5F413E830F4D3635542198EE8B85CE346D0D96C424EA7519
+              4AF0D2C1D8D898DBDCDCC439ADEFC33D9EA315948195148C8B01A1ED0A50A23E
+              83FDCA9C760884628922F5C001A1FB491119764330A78D0C76890C94AA8B104C
+              8FFF624E1B13EC992260E7B6DBC1A62C029A6EC823604E9B009B25C230FD6DC7
+              9C3636C4640BA0589D20403B6C49C9144330A74D01E1F2B1E2CE18B110AE7A6C
+              3CE6280873DA84A0678DB6EE6FB1D7A2F6D1065D99D3A682D0FFB94B69D962A3
+              2074D4EF5252FEFA08CC69134309AAB4C67109DD19FA295E3F5B98D366C01C77
+              0001013BA058BD0CC09C36359473C71E05564375319DA030A7CD01318FB68BE6
+              AB530641B8BBF8FFB4B43ACA9C3623A46532504A6F29CA51D80ED4EB8080396D
+              66C88E0B684DD7A3A4770E409DDC4C98D30A20C871C7C7C7DD8D1B37D4E88F61
+              7605D4C81B0173DADC50CACE06217DAF1BB277DD81581913614E2B014C1B9151
+              D4CEE16AE710A34F4A3AE2300AED4481259ED32297416D7F11AC8E0BC08566AF
+              BDF65A96B35D4892387DFAB4435E91D288392C69558673DAE9E9E96A6D6DCDEB
+              C92DA8CCC010B4C71D04B4B279E18517A2767200477DFFFDF79DEF3B4762B6E1
+              70DD50A6A6A65CA7D3C1396DBDC7AAEA3D96D70FB43531BE0176C7ED0796D04F
+              3FFDB4DBB3670F69F6822FFEF5EBD7DDD5AB571DD7D2B701B38B2DA2B750C524
+              C8DB05CBFF2524012314585A03BFFDF69BC3DC99C32CBF35BADB01A69778D344
+              3854A9986A8D12AE228C4140899A6A6CE53518CC55AA4DB9EA43154B08ACD84B
+              1A00B1ABBE66CC0E86E3BD6D6A0ADCD9AD7989C0DCE3A211DB227961575D6A83
+              F3CC53122D4DFCA720CB69EDD86730B0CD3879F2A4CB15944A09049F5E79E515
+              B3830110EA8D694E3B393959ADAFAF7BFD02EC7F6B03B597B5C5C2C24205771C
+              B59516B58FF102133986E87FED7734A7C5443F47FD501B80040588B8E73A6691
+              081444BCF5D65BF0516FB56D4C4C4C541B1B1B5E7F0B5953F5079FE6B4849E3F
+              AD7C314CA56AC5A3B5149109EFADE6A87B8C7C1468C1A82184B45969332D6C31
+              03B0F911ABD3167CD3D9366C66E5A12D491884B6B2614E8BA9F629BDAB7E60C7
+              416308A59F3C608EFA7C6E5918A92842524091CAAF95594908304160078E56F6
+              EEDDDB7DC10F3DF490B7C143A1C0DF7FFFED6EDDBAE56EDEBCE9BEFBEE3BF7E9
+              A79F42E78CDC62A9EBE081C47BB5EA13751FA924C2E5CA45293E5726133826AC
+              5C1E7BECB1A49157083E7EF1C517DD0AA01C67CBD29A0030C19AEFE0AB1CEF1F
+              2D25C810D82D1F0D38E8B3CF3E2B322600BA80324DA676335E94121FE14CAAF0
+              FE832DBC9DB6A978570B980600546069BBB8B8A8F203972A6A5E42791FA14493
+              C7690939B32A159D62762D2D629A2292AE3C50E53DE1CDCCCCB82B57AEF0382D
+              765F0BE97B0B0B0BAA948CE9D4816554864B29C4DCFF6BDCEB622701DF2D0146
+              09DE5F0C850A8ED21EA6947D1916EA75979EA8D167AC156A14A7253C3B0B3196
+              C3B0573D73E64CEB3B0F0250E1F4EAABAF3A86E6E6DB50F4318CE233DE82632F
+              5586BF959C24CE5D8503E78CC78F1F57B72D4805A662CC07E95544D876A91879
+              B042B36FAA73C0DD744D79A02419DCAD77244797B14B634C1C289AD3129F9F02
+              B6FDABA2659A2822449C25BE8368BE8212B69E3DAB7AF6F4FE7B81B79FB3386C
+              E939D6A960BC1F0810F33EB08138AC3DA104255E7D2145992C0E2B7DAFAE0DCE
+              25B3A0AB4750B686B5298A80AA96C85C4621FD563BED709DF10A71DCA83E8216
+              0EABDC9CAD35B98E742CD09406AE4BCC723A2E36498792D380168C3873255720
+              8701145E2E26168EE3A18C8E8B9A6529E3A40A851A58A67CDBA03DAC35DFCE0B
+              A67BE13052A7D312A3E2E8F1910422DE5193D201821CB6E50DC8C4C0D42944AC
+              DD5127B3108150034CE808410E2B2490616C2734F21FFD7D129A4590C7451686
+              9855145B79E25FAE4146FABB458D2F249B8B2C0825321B3383687C7CBC0AEC75
+              640E2B1FB2E3C66CA64FF18590155DA8101425B22B8E21B3C61C560F64C78D58
+              329AD40F8204A0D44D72EF6D196A37CD61F541765CEE1E6694BD6CE81838069F
+              7BB60DD9EB98C3EA85FCDE99838DC9ED3F78E094E31F686856FF9B5C1F0C36D9
+              8DEC647DFF9406771CB74BAAFDDA04D6C49AC39603C97199BA86665965B2182F
+              257B25A4BC2D701F6B0E5B10210521217B4B4AF093ABC15FEEBD659234CA1E96
+              E95426819953A9F2EF49BF15ED214040AE286A0C980BC1FAB15CE2B2A1DA5F6D
+              4FD0782E760717D69E56DC468C1606B344A1B629999898701B1B1BE6B08543AD
+              0EC2E40007DCAEC0667FAC869C40206AB4D01CB63DC4B611F4F3194F4B5003C5
+              80166ADFBE7DEEDAB56B8D63A1468BAD80BD5D605B97F6F0C905AEEDB4AAED94
+              322C56FB6337666A50A06989422D6897DE1BD78803757FDBD4AB89BA358B916F
+              1FC5A0A9C1A286F1D8B2D8C0C26D33E8E711835CE4010611D84C6DDB98A8FB64
+              AB8B351C5F6054D4A411CDA809970F7519B0A4452BCC3A271A404087C73B429F
+              11F3123A5185C13D7A7B0B625B9B1472197A40DB602F3F98D88DA247341B8C6A
+              DC212D4CB796B7E87F67577518FD501D6F6BE220FD666C1B8C6EDC01617234B1
+              36FE866E0202A368980A111A4965E0512E6DCE288FA108EEDBFA4610DD069318
+              39532BCC46245F7B68E487FB7AD341A4BA702E99914F4F4F576B6B6B45C862A8
+              25DA8A2FE57DCCAABAFE0FC36659C387C8134732FB137FD78960390C9DA8B7BF
+              E4C61E500934109B650D0C53535355A7D3617B5E8E7BAAB2183B7350C01CD6F0
+              865A0534887AB9EDEAE57672FBCB69F05CCB14735A038B6ADBCB6DF041CAB3EC
+              27830243837B209BDD653578869BDACD610D2AE40923F5BDB73BC96EF4D4E262
+              ABE43142A8EDA7AAED07FDEF325D90BE0D11464FE93460F5B20603A8D9564A47
+              CFEC03E84188288B19BBA1166FA74D99F1340A1183E8E1DB0233558EA75136BE
+              31959877DB521033901EA3CAA8382E30328C1EA3B66612CB3D450DA6C7B08E15
+              4DDDF20C83CAB042790941A741881B906118CD98D31A8632CC690D4319E6B486
+              A10C735AC3508639AD6128C39CD63094614E6B18CA30A7350C6598D31A8632FE
+              0733E41E8AA76573FE0000000049454E44AE426082}
+            Proportional = True
+          end
+          object EUsername: TEdit
+            Left = 88
+            Top = 64
+            Width = 233
+            Height = 23
+            TabOrder = 0
+          end
+          object EPassword: TEdit
+            Left = 88
+            Top = 107
+            Width = 233
+            Height = 23
+            TabOrder = 1
+          end
+          object BSaveUserS: TButton
+            Left = 246
+            Top = 144
+            Width = 75
+            Height = 25
+            Caption = 'Zmie'#324
+            TabOrder = 2
+            OnClick = BSaveUserSClick
+          end
+        end
+      end
+      object TabSheet2: TTabSheet
+        Caption = 'Podmioty'
+        ImageIndex = 1
+        object Panel3: TPanel
+          Left = -4
+          Top = -10
+          Width = 341
+          Height = 187
+          Color = clWhite
+          ParentBackground = False
+          TabOrder = 0
+          object LabelAddEntity: TLabel
+            Left = 210
+            Top = 16
+            Width = 83
+            Height = 15
+            Caption = 'Dodaj podmiot:'
+          end
+          object Label1: TLabel
+            Left = 210
+            Top = 104
+            Width = 85
+            Height = 15
+            Caption = 'Edytuj podmiot:'
+          end
+          object DBGridE: TDBGrid
+            Left = 4
+            Top = 10
+            Width = 170
+            Height = 175
+            DataSource = DataModule1.DataSourceEntities
+            Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            PopupMenu = PopupMenu
+            ReadOnly = True
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -12
+            TitleFont.Name = 'Segoe UI'
+            TitleFont.Style = []
+            OnDblClick = OnDblClickEntity
+            OnExit = OnExitEntities
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'Name'
+                Title.Alignment = taCenter
+                Title.Caption = 'Nazwa'
+                Title.Font.Charset = DEFAULT_CHARSET
+                Title.Font.Color = clWindowText
+                Title.Font.Height = -12
+                Title.Font.Name = 'Segoe UI'
+                Title.Font.Style = [fsBold]
+                Width = 150
+                Visible = True
+              end>
+          end
+          object EditAddEntity: TEdit
+            Left = 210
+            Top = 37
+            Width = 121
+            Height = 23
+            TabOrder = 1
+          end
+          object ButtonAddEntity: TButton
+            Left = 275
+            Top = 66
+            Width = 56
+            Height = 25
+            Caption = 'Dodaj'
+            TabOrder = 2
+            OnClick = ButtonAddEntityClick
+          end
+          object EditEditEntity: TEdit
+            Left = 210
+            Top = 125
+            Width = 121
+            Height = 23
+            TabOrder = 3
+          end
+          object ButtonEditEntity: TButton
+            Left = 275
+            Top = 154
+            Width = 56
+            Height = 25
+            Caption = 'Zapisz'
+            TabOrder = 4
+            OnClick = ButtonEditEntityClick
+          end
+        end
+      end
+      object TabSheet3: TTabSheet
+        Caption = 'Rodzaje'
+        ImageIndex = 2
+        object Panel4: TPanel
+          Left = -4
+          Top = -8
+          Width = 340
+          Height = 187
+          Color = clWhite
+          ParentBackground = False
+          TabOrder = 0
+          object LabelAddT: TLabel
+            Left = 180
+            Top = 16
+            Width = 69
+            Height = 15
+            Caption = 'Dodaj rodzaj:'
+          end
+          object LabelEditType: TLabel
+            Left = 180
+            Top = 104
+            Width = 71
+            Height = 15
+            Caption = 'Edytuj rodzaj:'
+          end
+          object DBGridTypes: TDBGrid
+            Left = 4
+            Top = 8
+            Width = 170
+            Height = 177
+            DataSource = DataModule1.DataSourceTypes
+            Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            PopupMenu = PopupMenu
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -12
+            TitleFont.Name = 'Segoe UI'
+            TitleFont.Style = []
+            OnDblClick = OnDblClickType
+            OnExit = OnExitTypes
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'TypeName'
+                Title.Alignment = taCenter
+                Title.Caption = 'Nazwa'
+                Title.Font.Charset = DEFAULT_CHARSET
+                Title.Font.Color = clWindowText
+                Title.Font.Height = -12
+                Title.Font.Name = 'Segoe UI'
+                Title.Font.Style = [fsBold]
+                Width = 150
+                Visible = True
+              end>
+          end
+          object EditAddType: TEdit
+            Left = 180
+            Top = 37
+            Width = 141
+            Height = 23
+            TabOrder = 1
+          end
+          object ButtonAddT: TButton
+            Left = 265
+            Top = 66
+            Width = 56
+            Height = 25
+            Caption = 'Dodaj'
+            TabOrder = 2
+            OnClick = ButtonAddTypeClick
+          end
+          object EditEditType: TEdit
+            Left = 180
+            Top = 125
+            Width = 141
+            Height = 23
+            TabOrder = 3
+          end
+          object ButtonEditType: TButton
+            Left = 265
+            Top = 154
+            Width = 56
+            Height = 25
+            Caption = 'Dodaj'
+            TabOrder = 4
+            OnClick = ButtonEditTypeClick
+          end
+        end
+      end
+      object TabSheet4: TTabSheet
+        Caption = 'Panel administracyjny'
+        ImageIndex = 3
+        object Panel5: TPanel
+          Left = -4
+          Top = -8
+          Width = 340
+          Height = 187
+          Color = clWhite
+          ParentBackground = False
+          TabOrder = 0
+          object Label3: TLabel
+            Left = 210
+            Top = 16
+            Width = 3
+            Height = 15
+          end
+          object DBGridUsersView: TDBGrid
+            Left = 4
+            Top = 8
+            Width = 341
+            Height = 145
+            DataSource = DataModule1.DataSourceUsers
+            Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            PopupMenu = PopupMenuAdmin
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -12
+            TitleFont.Name = 'Segoe UI'
+            TitleFont.Style = []
+            Columns = <
+              item
+                Alignment = taCenter
+                Expanded = False
+                FieldName = 'UserName'
+                Title.Alignment = taCenter
+                Title.Caption = 'Nazwa'
+                Title.Font.Charset = DEFAULT_CHARSET
+                Title.Font.Color = clWindowText
+                Title.Font.Height = -12
+                Title.Font.Name = 'Segoe UI'
+                Title.Font.Style = [fsBold]
+                Width = 200
+                Visible = True
+              end
+              item
+                Alignment = taCenter
+                Expanded = False
+                FieldName = 'Role'
+                Title.Alignment = taCenter
+                Title.Caption = 'Rola'
+                Title.Font.Charset = DEFAULT_CHARSET
+                Title.Font.Color = clWindowText
+                Title.Font.Height = -12
+                Title.Font.Name = 'Segoe UI'
+                Title.Font.Style = [fsBold]
+                Width = 115
+                Visible = True
+              end>
+          end
+          object ButtonAddUsr: TButton
+            Left = 4
+            Top = 159
+            Width = 61
+            Height = 25
+            Caption = 'Dodaj'
+            TabOrder = 1
+            OnClick = ButtonAddUsrClick
+          end
+          object ButtonEditUsr: TButton
+            Left = 71
+            Top = 159
+            Width = 61
+            Height = 25
+            Caption = 'Edytuj'
+            TabOrder = 2
+            OnClick = ButtonEditUsrClick
+          end
+          object ButtonRemoveUsr: TButton
+            Left = 138
+            Top = 159
+            Width = 61
+            Height = 25
+            Caption = 'Usu'#324
+            TabOrder = 3
+            OnClick = ButtonRemoveUsrClick
+          end
+        end
+      end
+    end
+  end
+  object PopupMenu: TPopupMenu
+    Left = 8
+    Top = 8
+    object Remove1: TMenuItem
+      Caption = 'Remove'
+      OnClick = OnClickRemoveType
+    end
+  end
+  object PopupMenuAdmin: TPopupMenu
+    Left = 296
+    Top = 8
+    object Add1: TMenuItem
+      Caption = 'Add'
+    end
+    object Add2: TMenuItem
+      Caption = 'Edit'
+    end
+    object Remove2: TMenuItem
+      Caption = 'Remove'
+    end
+  end
+end

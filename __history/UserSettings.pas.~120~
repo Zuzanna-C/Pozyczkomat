@@ -1,0 +1,576 @@
+﻿unit UserSettings;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  DataModule, System.Hash, Vcl.Imaging.pngimage, Vcl.ComCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids, Vcl.Menus, ManageUsers;
+
+type
+  TForm7 = class(TForm)
+    Panel1: TPanel;
+    LUserSett: TLabel;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
+    Panel2: TPanel;
+    LUser: TLabel;
+    EUsername: TEdit;
+    Label2: TLabel;
+    EPassword: TEdit;
+    BSaveUserS: TButton;
+    Image1: TImage;
+    Panel3: TPanel;
+    TabSheet4: TTabSheet;
+    Panel4: TPanel;
+    Panel5: TPanel;
+    DBGridE: TDBGrid;
+    DBGridTypes: TDBGrid;
+    LabelAddT: TLabel;
+    EditAddType: TEdit;
+    ButtonAddT: TButton;
+    PopupMenu: TPopupMenu;
+    Remove1: TMenuItem;
+    LabelAddEntity: TLabel;
+    EditAddEntity: TEdit;
+    ButtonAddEntity: TButton;
+    Label1: TLabel;
+    EditEditEntity: TEdit;
+    ButtonEditEntity: TButton;
+    LabelEditType: TLabel;
+    EditEditType: TEdit;
+    ButtonEditType: TButton;
+    DBGridUsersView: TDBGrid;
+    PopupMenuAdmin: TPopupMenu;
+    Add1: TMenuItem;
+    Add2: TMenuItem;
+    Remove2: TMenuItem;
+    Label3: TLabel;
+    ButtonAddUsr: TButton;
+    ButtonEditUsr: TButton;
+    ButtonRemoveUsr: TButton;
+    procedure BSaveUserSClick(Sender: TObject);
+    procedure UpdateUserCredentials(const NewUsername, NewPassword: string);
+    procedure OnShow(Sender: TObject);
+    procedure LoadUserData;
+    procedure ButtonEditEntityClick(Sender: TObject);
+    procedure ButtonAddEntityClick(Sender: TObject);
+    procedure ButtonEditTypeClick(Sender: TObject);
+    procedure ButtonAddTypeClick(Sender: TObject);
+    procedure OnClickRemoveType(Sender: TObject);
+    procedure OnExitTypes(Sender: TObject);
+    procedure OnExitEntities(Sender: TObject);
+    procedure OnDblClickEntity(Sender: TObject);
+    procedure OnDblClickType(Sender: TObject);
+    procedure ButtonAddUsrClick(Sender: TObject);
+    procedure ButtonEditUsrClick(Sender: TObject);
+    procedure OnCreate(Sender: TObject);
+    procedure ButtonRemoveUsrClick(Sender: TObject);
+    procedure OnClickPopMenuAdd(Sender: TObject);
+    procedure OnClickPopMenuEdit(Sender: TObject);
+    procedure OnClickPopMenuRemove(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    UserID: Integer;
+  end;
+
+var
+  Form7: TForm7;
+
+implementation
+
+{$R *.dfm}
+
+function HashPassword(const Password: string): string;
+begin
+  Result := UpperCase(THashSHA2.GetHashString(Password));
+end;
+
+function GetUserRole(UserID: Integer): Integer;
+begin
+  Result := 0;
+  with DataModule1.FDQueryGetUserData do
+  begin
+    Close;
+    ParamByName('UserID').AsInteger := UserID;
+    Open;
+
+    if not EOF then
+      Result := FieldByName('Role').AsInteger;
+
+    Close;
+  end;
+end;
+
+procedure TForm7.OnClickPopMenuAdd(Sender: TObject);
+begin
+  Form8 := TForm8.Create(nil);
+  try
+    Form8.InitForm(True);
+    Form8.ShowModal;
+  finally
+    Form8.Free;
+  end;
+end;
+
+procedure TForm7.OnClickPopMenuEdit(Sender: TObject);
+var
+  SelectedUserID: Integer;
+begin
+  if DataModule1.FDQueryUsers.IsEmpty then
+  begin
+    ShowMessage('Nie wybrano użytkownika do edycji.');
+    Exit;
+  end;
+
+  SelectedUserID := DataModule1.FDQueryUsers.FieldByName('ID').AsInteger;
+
+  Form8 := TForm8.Create(nil);
+  try
+    Form8.InitForm(False, SelectedUserID);
+    Form8.ShowModal;
+  finally
+    Form8.Free;
+  end;
+end;
+
+procedure TForm7.OnClickPopMenuRemove(Sender: TObject);
+var
+  SelectedUserID: Integer;
+begin
+  if DataModule1.FDQueryUsers.IsEmpty then
+  begin
+    ShowMessage('Nie wybrano użytkownika do dezaktywacji.');
+    Exit;
+  end;
+
+  if not DataModule1.FDQueryEntities.FieldByName('UserId').IsNull then
+  begin
+    ShowMessage('Nie można usunąć tej encji – jest powiązana z użytkownikiem.');
+    Exit;
+  end;
+
+  SelectedUserID := DataModule1.FDQueryUsers.FieldByName('ID').AsInteger;
+
+  with DataModule1.FDQueryDeactivateUser do
+  begin
+    SQL.Text := 'UPDATE Users SET Active = 0 WHERE ID = :id';
+    Params.ParamByName('id').AsInteger := SelectedUserID;
+
+    try
+      Execute;
+      ShowMessage('Użytkownik został zdezaktywowany.');
+    except
+      on E: Exception do
+        ShowMessage('Błąd podczas dezaktywacji użytkownika: ' + E.Message);
+    end;
+  end;
+
+  DataModule1.FDQueryUsers.Refresh;
+end;
+
+procedure TForm7.OnClickRemoveType(Sender: TObject);
+var
+  recordID: Integer;
+begin
+  if ActiveControl = DBGridTypes then
+  begin
+    if DataModule1.FDQueryTypes.IsEmpty then Exit;
+    recordID := DataModule1.FDQueryTypes.FieldByName('id').AsInteger;
+
+    if MessageDlg('Deactivate this type?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
+      with DataModule1.FDQueryRemoveType do
+      begin
+        Close;
+        SQL.Text := 'UPDATE Types SET Active = 0 WHERE id = :id';
+        ParamByName('id').AsInteger := recordID;
+        ExecSQL;
+      end;
+      DataModule1.FDQueryTypes.Refresh;
+    end;
+  end
+  else if ActiveControl = DBGridE then
+  begin
+    if DataModule1.FDQueryEntities.IsEmpty then Exit;
+    recordID := DataModule1.FDQueryEntities.FieldByName('id').AsInteger;
+
+    if not DataModule1.FDQueryEntities.FieldByName('UserId').IsNull then
+    begin
+      ShowMessage('Nie można dezaktywować tej encji – jest powiązana z użytkownikiem.');
+      Exit;
+    end;
+
+    if MessageDlg('Deactivate this entity?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+    begin
+      with DataModule1.FDQueryRemoveEntity do
+      begin
+        Close;
+        SQL.Text := 'UPDATE Entities SET Active = 0 WHERE id = :id';
+        ParamByName('id').AsInteger := recordID;
+        ExecSQL;
+      end;
+      DataModule1.FDQueryEntities.Refresh;
+    end;
+  end;
+end;
+
+procedure TForm7.OnCreate(Sender: TObject);
+begin
+  PageControl1.ActivePageIndex := 0;
+  DataModule1.FDQueryUsers.Active := true;
+end;
+
+procedure TForm7.OnDblClickEntity(Sender: TObject);
+begin
+  if DataModule1.FDQueryEntities.IsEmpty then Exit;
+
+  if not DataModule1.FDQueryEntities.FieldByName('UserId').IsNull then
+  begin
+    ShowMessage('Nie można edytować tej encji – jest powiązana z użytkownikiem.');
+    Exit;
+  end;
+
+  EditEditEntity.Text := DataModule1.FDQueryEntities.FieldByName('Name').AsString;
+
+  Label1.Visible := True;
+  EditEditEntity.Visible := True;
+  ButtonEditEntity.Visible := True;
+end;
+
+
+procedure TForm7.OnDblClickType(Sender: TObject);
+begin
+  if DataModule1.FDQueryTypes.IsEmpty then Exit;
+
+  EditEditType.Text := DataModule1.FDQueryTypes.FieldByName('TypeName').AsString;
+
+  LabelEditType.Visible := True;
+  EditEditType.Visible := True;
+  ButtonEditType.Visible := True;
+end;
+
+procedure TForm7.OnExitEntities(Sender: TObject);
+begin
+  if DataModule1.FDQueryEntities.State in [dsEdit, dsInsert] then
+    DataModule1.FDQueryEntities.Post;
+end;
+
+procedure TForm7.OnExitTypes(Sender: TObject);
+begin
+  if DataModule1.FDQueryTypes.State in [dsEdit, dsInsert] then
+    DataModule1.FDQueryTypes.Post;
+end;
+
+procedure TForm7.OnShow(Sender: TObject);
+begin
+  LoadUserData;
+  DataModule1.FDQueryEntities.Active := True;
+
+  Label1.Visible := False;
+  EditEditEntity.Visible := False;
+  ButtonEditEntity.Visible := False;
+
+  LabelEditType.Visible := False;
+  EditEditType.Visible := False;
+  ButtonEditType.Visible := False;
+
+  if GetUserRole(UserID) = 0 then
+    TabSheet4.TabVisible := False
+  else
+    TabSheet4.TabVisible := True;
+end;
+
+procedure TForm7.UpdateUserCredentials(const NewUsername, NewPassword: string);
+var
+  HashedPassword: string;
+begin
+  HashedPassword := HashPassword(NewPassword);
+  with DataModule1.FDCommandUpdateUsrPass do
+  begin
+    Params.Clear;
+    Params.Add.Name := 'u';
+    Params.Add.Name := 'p';
+    Params.Add.Name := 'id';
+
+    Params.ParamByName('u').AsString := NewUsername;
+    Params.ParamByName('p').AsString := HashedPassword;
+    Params.ParamByName('id').AsInteger := Self.UserID;
+
+    Execute;
+  end;
+  with DataModule1.FDQueryUpdateEntityName do
+  begin
+    SQL.Text := 'UPDATE Entities SET Name = :name WHERE UserId = :uid';
+    Params.Clear;
+    Params.Add.Name := 'name';
+    Params.Add.Name := 'uid';
+
+    Params.ParamByName('name').AsString := NewUsername;
+    Params.ParamByName('uid').AsInteger := Self.UserID;
+
+    Execute;
+  end;
+  DataModule1.FDQueryEntities.Refresh;
+end;
+
+function GetCurrentCredentials(UserID: Integer; out CurrentUsername, CurrentPassword: string): Boolean;
+begin
+  Result := False;
+  with DataModule1.FDQueryGetUserData do
+  begin
+    Close;
+    ParamByName('UserID').AsInteger := UserID;
+    Open;
+
+    if not EOF then
+    begin
+      CurrentUsername := FieldByName('Username').AsString;
+      CurrentPassword := FieldByName('Password').AsString;
+      Result := True;
+    end;
+    Close;
+  end;
+end;
+
+procedure TForm7.ButtonAddTypeClick(Sender: TObject);
+begin
+  if Trim(EditAddType.Text) = '' then
+  begin
+    ShowMessage('Type name field is empty. Insert a new name before adding.');
+    Exit;
+  end;
+
+  DataModule1.FDQueryAddType.Params.ParamByName('TypeName').AsString := EditAddType.Text;
+
+  try
+    DataModule1.FDQueryAddType.ExecSQL;
+  except
+    on E: Exception do
+      ShowMessage('Error while adding type: ' + E.Message);
+  end;
+
+  EditAddType.Text := '';
+  DataModule1.FDQueryTypes.Refresh;
+end;
+
+procedure TForm7.ButtonAddUsrClick(Sender: TObject);
+begin
+  Form8 := TForm8.Create(nil);
+  try
+    Form8.InitForm(True);
+    Form8.ShowModal;
+  finally
+    Form8.Free;
+  end;
+end;
+
+procedure TForm7.LoadUserData;
+var
+  CurrentUsername, CurrentPassword: string;
+begin
+  if GetCurrentCredentials(UserID, CurrentUsername, CurrentPassword) then
+  begin
+    EUsername.Text := CurrentUsername;
+  end
+  else
+    ShowMessage('Nie udało się załadować danych użytkownika.');
+end;
+
+procedure TForm7.BSaveUserSClick(Sender: TObject);
+var
+  NewUsername, NewPassword: string;
+  CurrentUsername, CurrentPassword: string;
+begin
+  NewUsername := Trim(EUsername.Text);
+  NewPassword := Trim(EPassword.Text);
+
+  if not GetCurrentCredentials(UserID, CurrentUsername, CurrentPassword) then
+  begin
+    ShowMessage('Nie udało się pobrać danych użytkownika.');
+    Exit;
+  end;
+
+  if NewUsername = '' then
+    NewUsername := CurrentUsername;
+
+  if NewPassword = '' then
+    NewPassword := CurrentPassword;
+
+  UpdateUserCredentials(NewUsername, NewPassword);
+end;
+
+procedure TForm7.ButtonAddEntityClick(Sender: TObject);
+begin
+  if Trim(EditAddEntity.Text) = '' then
+  begin
+    ShowMessage('Entity name field is empty. Insert a new name before adding.');
+    Exit;
+  end;
+
+  with DataModule1.FDQueryAddEntity do
+  begin
+    Params.ParamByName('EntityName').AsString := EditAddEntity.Text;
+    Params.ParamByName('ModId').AsInteger := Self.UserID;
+
+    try
+      ExecSQL;
+    except
+      on E: Exception do
+        ShowMessage('Error while adding entity: ' + E.Message);
+    end;
+  end;
+
+  EditAddEntity.Text := '';
+  DataModule1.FDQueryEntities.Refresh;
+end;
+
+procedure TForm7.ButtonEditEntityClick(Sender: TObject);
+var
+  SelectedID: Integer;
+begin
+  if Trim(EditEditEntity.Text) = '' then
+  begin
+    ShowMessage('Entity name cannot be empty.');
+    Exit;
+  end;
+
+  if DataModule1.FDQueryEntities.IsEmpty then
+  begin
+    ShowMessage('No entity selected.');
+    Exit;
+  end;
+
+  SelectedID := DataModule1.FDQueryEntities.FieldByName('id').AsInteger;
+
+  with DataModule1.FDQueryEditEntity do
+  begin
+    Params.ParamByName('name').AsString := EditEditEntity.Text;
+    Params.ParamByName('usrId').AsInteger := Self.UserID;
+    Params.ParamByName('id').AsInteger := SelectedID;
+
+    try
+      Execute;
+      DataModule1.FDQueryEntities.Refresh;
+    except
+      on E: Exception do
+        ShowMessage('Error while updating entity: ' + E.Message);
+    end;
+  end;
+
+  Label1.Visible := False;
+  EditEditEntity.Visible := False;
+  ButtonEditEntity.Visible := False;
+end;
+
+procedure TForm7.ButtonEditTypeClick(Sender: TObject);
+var
+  SelectedID: Integer;
+begin
+  if Trim(EditEditType.Text) = '' then
+  begin
+    ShowMessage('Type name cannot be empty.');
+    Exit;
+  end;
+
+  if DataModule1.FDQueryTypes.IsEmpty then
+  begin
+    ShowMessage('No type selected.');
+    Exit;
+  end;
+
+  SelectedID := DataModule1.FDQueryTypes.FieldByName('id').AsInteger;
+
+  with DataModule1.FDQueryEditType do
+  begin
+    SQL.Text := 'UPDATE Types SET TypeName = :name WHERE Id = :id';
+
+    Params.ParamByName('name').AsString := EditEditType.Text;
+    Params.ParamByName('id').AsInteger := SelectedID;
+
+    try
+      ExecSQL;
+      DataModule1.FDQueryTypes.Refresh;
+    except
+      on E: Exception do
+        ShowMessage('Error while updating type: ' + E.Message);
+    end;
+  end;
+
+  LabelEditType.Visible := False;
+  EditEditType.Visible := False;
+  ButtonEditType.Visible := False;
+end;
+
+procedure TForm7.ButtonEditUsrClick(Sender: TObject);
+var
+  SelectedUserID: Integer;
+begin
+  if DataModule1.FDQueryUsers.IsEmpty then
+  begin
+    ShowMessage('Nie wybrano użytkownika do edycji.');
+    Exit;
+  end;
+
+  SelectedUserID := DataModule1.FDQueryUsers.FieldByName('ID').AsInteger;
+
+  Form8 := TForm8.Create(nil);
+  try
+    Form8.InitForm(False, SelectedUserID);
+    Form8.ShowModal;
+  finally
+    Form8.Free;
+  end;
+end;
+
+procedure TForm7.ButtonRemoveUsrClick(Sender: TObject);
+var
+  SelectedUserID: Integer;
+begin
+  if DataModule1.FDQueryUsers.IsEmpty then
+  begin
+    ShowMessage('Nie wybrano użytkownika do dezaktywacji.');
+    Exit;
+  end;
+
+  SelectedUserID := DataModule1.FDQueryUsers.FieldByName('ID').AsInteger;
+
+  // 🔹 Najpierw odpinamy encję
+  with DataModule1.FDQueryUpdateEntityName do
+  begin
+    SQL.Text := 'UPDATE Entities SET UserId = NULL WHERE UserId = :uid';
+    ParamByName('uid').AsInteger := SelectedUserID;
+    try
+      ExecSQL;
+    except
+      on E: Exception do
+        ShowMessage('Błąd podczas odpinania encji: ' + E.Message);
+    end;
+  end;
+
+  // 🔹 Teraz dezaktywujemy użytkownika
+  with DataModule1.FDQueryDeactivateUser do
+  begin
+    SQL.Text := 'UPDATE Users SET Active = 0 WHERE ID = :id';
+    ParamByName('id').AsInteger := SelectedUserID;
+
+    try
+      ExecSQL;
+      ShowMessage('Użytkownik został zdezaktywowany i odłączony od encji.');
+    except
+      on E: Exception do
+        ShowMessage('Błąd podczas dezaktywacji użytkownika: ' + E.Message);
+    end;
+  end;
+
+  DataModule1.FDQueryUsers.Refresh;
+  DataModule1.FDQueryEntities.Refresh;
+end;
+
+
+end.
+
