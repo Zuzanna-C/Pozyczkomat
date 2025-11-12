@@ -1,0 +1,18 @@
+# Ustawienie języka dla plików Delphi
+*.pas linguist-language=Delphi
+*.dpr linguist-language=Delphi
+*.dfm linguist-language=Delphi
+*.fmx linguist-language=Delphi
+*.dpk linguist-language=Delphi
+*.dproj linguist-language=Delphi
+
+# Wykluczenie plików projektowych i zasobów z analizy językowej
+*.dfm linguist-generated
+*.fmx linguist-generated
+*.res linguist-generated
+*.dproj linguist-generated
+*.dpk linguist-generated
+
+# Dokumentacja
+*.md linguist-documentation
+*.txt linguist-documentation
